@@ -101,15 +101,15 @@ alias zshrld="source ~/.zshrc"
 alias rld="source ~/.zshrc"
 
 valiases() {
-  gui_edit "$DOTFILES/env/aliases.zsh"
+  gui_edit "$CHEZMOI_ZSH_ENV_DIR/aliases.zsh"
 }
 
 vmacros() {
-  gui_edit "$DOTFILES/env/functions.zsh.tmpl"
+  gui_edit "$CHEZMOI_ZSH_ENV_DIR/functions.zsh.tmpl"
 }
 
 zshcfg() {
-  edit "$HOME/.zshrc"
+  edit "$CHEZMOI_SOURCE_DIR/dot_zshrc"
 }
 
 sshkeys() {
@@ -117,9 +117,9 @@ sshkeys() {
 }
 
 aliases() {
-  edit "$DOTFILES/env/aliases.zsh"
+  edit "$CHEZMOI_ZSH_ENV_DIR/aliases.zsh"
 }
 
 macros() {
-  edit "$DOTFILES/env/functions.zsh.tmpl"
+  edit "$CHEZMOI_ZSH_ENV_DIR/functions.zsh.tmpl"
 }

@@ -8,20 +8,21 @@ esac
 
 export STM32CubeMX_PATH="/Applications/STMicroelectronics/STM32CubeMX.app/Contents/Resources"
 
-export DESKTOP_REMOTE="adamsgalaxy.ddns.net"
-export DESKTOP_LOCAL="desktop.home"
+# Bob is my home desktop computer. Say hi to Bob!
+export BOB_REMOTE="adamsgalaxy.ddns.net"
+export BOB_LOCAL="BOB.home"
 
-set_desktop_endpoint() {
-  local gateway
-  gateway="$(route -n get default 2>/dev/null | awk '/gateway:/ {print $2; exit}')"
+set_bob_endpoint() {
+  local ssid
+  ssid="$(networksetup -getairportnetwork en0 | sed 's/^.*: //')"
 
-  if [[ "$gateway" == "192.168.1.1" ]]; then
-    export DESKTOP="$DESKTOP_LOCAL"
+  if [[ "$ssid" == "$HOME_SSID" ]]; then
+    export BOB="$BOB_LOCAL"
   else
-    export DESKTOP="$DESKTOP_REMOTE"
+    export BOB="$BOB_REMOTE"
   fi
 }
 
-set_desktop_endpoint
+set_bob_endpoint
 
-alias desktop="ssh adam@$DESKTOP"
+alias bob="ssh bob"
