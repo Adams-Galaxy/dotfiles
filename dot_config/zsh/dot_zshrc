@@ -33,6 +33,7 @@ source "$DOTFILES/env/prompt.zsh"
 source "$DOTFILES/env/splash.zsh"
 
 if [[ -o interactive ]]; then
+  clear
   splash
 fi
 
