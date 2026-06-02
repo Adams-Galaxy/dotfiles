@@ -4,7 +4,7 @@
 MACOS_PACKAGES="git curl zsh starship zoxide atuin direnv eza neovim yazi fastfetch fzf fd ripgrep bat gh git-delta lazygit lazydocker btop"
 
 LINUX_BASE_PACKAGES="git zsh curl ca-certificates"
-LINUX_TOOL_PACKAGES="starship zoxide atuin direnv eza neovim yazi fastfetch fzf fd ripgrep bat gh lazygit lazydocker btop"
+LINUX_TOOL_PACKAGES="zoxide atuin direnv eza neovim yazi fastfetch fzf fd ripgrep bat gh lazygit lazydocker btop"
 
 APT_EXTRA_PACKAGES="delta"
 DNF_EXTRA_PACKAGES="delta"
