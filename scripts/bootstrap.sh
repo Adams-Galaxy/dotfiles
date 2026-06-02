@@ -105,6 +105,67 @@ install_starship() {
   sh -c "$(curl -fsSL https://starship.rs/install.sh)" -- -y -b "$HOME/.local/bin"
 }
 
+install_yazi_from_github_deb() {
+  if ! have_command curl; then
+    printf '%s\n' "curl is required to install Yazi from GitHub releases."
+    return 1
+  fi
+
+  if ! have_command dpkg; then
+    printf '%s\n' "dpkg is required to install the Yazi .deb fallback package."
+    return 1
+  fi
+
+  arch="$(uname -m)"
+  case "$arch" in
+    x86_64|amd64)
+      yazi_arch="x86_64"
+      ;;
+    aarch64|arm64)
+      yazi_arch="aarch64"
+      ;;
+    *)
+      printf '%s\n' "Skipping Yazi fallback: unsupported architecture '$arch'."
+      return 0
+      ;;
+  esac
+
+  yazi_deb_url="https://github.com/sxyazi/yazi/releases/latest/download/yazi-${yazi_arch}-unknown-linux-gnu.deb"
+  yazi_tmp_deb="$(mktemp /tmp/yazi.XXXXXX.deb)"
+
+  if ! curl -fL -o "$yazi_tmp_deb" "$yazi_deb_url"; then
+    rm -f "$yazi_tmp_deb"
+    printf '%s\n' "Failed to download Yazi fallback package from GitHub releases."
+    return 1
+  fi
+
+  if ! run_as_root dpkg -i "$yazi_tmp_deb"; then
+    printf '%s\n' "Yazi .deb install reported missing dependencies, attempting apt fix-up..."
+    run_as_root apt-get -f install -y || true
+    run_as_root dpkg -i "$yazi_tmp_deb" || true
+  fi
+
+  rm -f "$yazi_tmp_deb"
+
+  if have_command yazi; then
+    return 0
+  fi
+
+  printf '%s\n' "Yazi fallback installation did not produce a usable 'yazi' binary."
+  return 1
+}
+
+install_yazi_if_missing() {
+  if have_command yazi; then
+    return 0
+  fi
+
+  if have_command apt-get; then
+    printf '%s\n' "Yazi package unavailable via apt sources; trying official GitHub .deb fallback..."
+    install_yazi_from_github_deb || true
+  fi
+}
+
 install_packages_with_apt() {
   run_as_root apt-get update
   for package in "$@"; do
@@ -210,6 +271,7 @@ install_oh_my_zsh_plugins() {
 install_linux_dependencies() {
   if have_command apt-get; then
     install_packages_with_apt $LINUX_BASE_PACKAGES $LINUX_TOOL_PACKAGES $APT_EXTRA_PACKAGES
+    install_yazi_if_missing
   elif have_command dnf; then
     install_packages_with_dnf $LINUX_BASE_PACKAGES $LINUX_TOOL_PACKAGES $DNF_EXTRA_PACKAGES
   elif have_command pacman; then

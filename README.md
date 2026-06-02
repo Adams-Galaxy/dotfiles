@@ -11,5 +11,6 @@
    - install zsh and make it the login shell on Linux when needed
    - install Homebrew automatically on macOS if needed
    - install Oh My Zsh and the custom plugins
+   - install Yazi via distro packages, with an official GitHub `.deb` fallback on apt-based Linux when package repos don't provide it
    - install the shell tools and completions
 4. Open a new shell.
