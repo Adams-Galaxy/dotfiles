@@ -2,24 +2,188 @@
 set -eu
 
 repo_dir="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
-repo_url="$(git -C "$repo_dir" remote get-url origin 2>/dev/null || true)"
+repo_url="${CHEZMOI_REPO_URL:-${1:-}}"
+install_only=0
+packages_file="$repo_dir/scripts/packages.sh"
 
-if [ -z "$repo_url" ]; then
-  printf '%s\n' "No git remote found for $repo_dir. Set the repo URL in scripts/bootstrap.sh before running it."
-  exit 1
+if [ -f "$packages_file" ]; then
+  . "$packages_file"
 fi
+
+: "${MACOS_PACKAGES:=git curl zsh starship zoxide atuin direnv eza neovim yazi fastfetch fzf fd ripgrep bat gh git-delta lazygit lazydocker btop}"
+: "${LINUX_BASE_PACKAGES:=git zsh curl ca-certificates}"
+: "${LINUX_TOOL_PACKAGES:=starship zoxide atuin direnv eza neovim yazi fastfetch fzf fd ripgrep bat gh lazygit lazydocker btop}"
+: "${APT_EXTRA_PACKAGES:=delta}"
+: "${DNF_EXTRA_PACKAGES:=delta}"
+: "${PACMAN_EXTRA_PACKAGES:=git-delta}"
+: "${ZYPPER_EXTRA_PACKAGES:=git-delta}"
+: "${APK_EXTRA_PACKAGES:=git-delta}"
+: "${OMZ_PLUGINS:=zsh-autosuggestions zsh-syntax-highlighting zsh-completions}"
+
+if [ "${1:-}" = "--install-only" ]; then
+  install_only=1
+  repo_url=""
+fi
+
+if [ "$install_only" -eq 0 ]; then
+  if [ -z "$repo_url" ]; then
+    repo_url="$(git -C "$repo_dir" remote get-url origin 2>/dev/null || true)"
+  fi
+
+  if [ -z "$repo_url" ]; then
+    printf '%s\n' "Set CHEZMOI_REPO_URL or pass the repo URL as the first argument."
+    exit 1
+  fi
+fi
+
+have_command() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+run_as_root() {
+  if [ "$(id -u)" -eq 0 ]; then
+    "$@"
+  elif have_command sudo; then
+    sudo "$@"
+  else
+    printf '%s\n' "sudo is required to install packages on this machine."
+    return 1
+  fi
+}
+
+install_packages_with_apt() {
+  run_as_root apt-get update
+  for package in "$@"; do
+    if ! run_as_root apt-get install -y "$package"; then
+      printf '%s\n' "Skipping unavailable apt package: $package"
+    fi
+  done
+}
+
+install_packages_with_dnf() {
+  for package in "$@"; do
+    if ! run_as_root dnf install -y "$package"; then
+      printf '%s\n' "Skipping unavailable dnf package: $package"
+    fi
+  done
+}
+
+install_packages_with_pacman() {
+  run_as_root pacman -Sy --noconfirm
+  for package in "$@"; do
+    if ! run_as_root pacman -S --noconfirm --needed "$package"; then
+      printf '%s\n' "Skipping unavailable pacman package: $package"
+    fi
+  done
+}
+
+install_packages_with_zypper() {
+  for package in "$@"; do
+    if ! run_as_root zypper --non-interactive install "$package"; then
+      printf '%s\n' "Skipping unavailable zypper package: $package"
+    fi
+  done
+}
+
+install_packages_with_apk() {
+  run_as_root apk update
+  for package in "$@"; do
+    if ! run_as_root apk add "$package"; then
+      printf '%s\n' "Skipping unavailable apk package: $package"
+    fi
+  done
+}
+
+install_macos_dependencies() {
+  if ! have_command brew; then
+    NONINTERACTIVE=1 CI=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  fi
+
+  if ! have_command brew; then
+    for brew_path in /opt/homebrew/bin/brew /usr/local/bin/brew; do
+      if [ -x "$brew_path" ]; then
+        PATH="$(dirname "$brew_path"):$PATH"
+        export PATH
+        break
+      fi
+    done
+  fi
+
+  if ! have_command brew; then
+    printf '%s\n' "Homebrew installation failed or brew is not on PATH."
+    return 1
+  fi
+
+  brew install $MACOS_PACKAGES
+}
+
+install_oh_my_zsh() {
+  if [ -f "$HOME/.oh-my-zsh/oh-my-zsh.sh" ]; then
+    return 0
+  fi
+
+  env RUNZSH=no CHSH=no KEEP_ZSHRC=yes sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+}
+
+clone_plugin() {
+  plugin_name="$1"
+  plugin_repo="$2"
+  plugin_dir="$HOME/.oh-my-zsh/custom/plugins/$plugin_name"
+
+  if [ -d "$plugin_dir" ]; then
+    return 0
+  fi
+
+  git clone --depth=1 "$plugin_repo" "$plugin_dir"
+}
+
+install_oh_my_zsh_plugins() {
+  for plugin in $OMZ_PLUGINS; do
+    case "$plugin" in
+      zsh-autosuggestions)
+        clone_plugin "$plugin" https://github.com/zsh-users/zsh-autosuggestions.git
+        ;;
+      zsh-syntax-highlighting)
+        clone_plugin "$plugin" https://github.com/zsh-users/zsh-syntax-highlighting.git
+        ;;
+      zsh-completions)
+        clone_plugin "$plugin" https://github.com/zsh-users/zsh-completions.git
+        ;;
+    esac
+  done
+}
+
+install_linux_dependencies() {
+  if have_command apt-get; then
+    install_packages_with_apt $LINUX_BASE_PACKAGES $LINUX_TOOL_PACKAGES $APT_EXTRA_PACKAGES
+  elif have_command dnf; then
+    install_packages_with_dnf $LINUX_BASE_PACKAGES $LINUX_TOOL_PACKAGES $DNF_EXTRA_PACKAGES
+  elif have_command pacman; then
+    install_packages_with_pacman $LINUX_BASE_PACKAGES $LINUX_TOOL_PACKAGES $PACMAN_EXTRA_PACKAGES
+  elif have_command zypper; then
+    install_packages_with_zypper $LINUX_BASE_PACKAGES $LINUX_TOOL_PACKAGES $ZYPPER_EXTRA_PACKAGES
+  elif have_command apk; then
+    install_packages_with_apk $LINUX_BASE_PACKAGES $LINUX_TOOL_PACKAGES $APK_EXTRA_PACKAGES
+  else
+    printf '%s\n' "No supported Linux package manager was found."
+    printf '%s\n' "Install git, zsh, curl, and ca-certificates manually, then rerun this script."
+    return 1
+  fi
+}
 
 case "$(uname -s)" in
   Darwin)
-    if ! command -v brew >/dev/null 2>&1; then
+    if ! have_command brew; then
       printf '%s\n' "Install Homebrew first: https://brew.sh"
       exit 1
     fi
-    brew install chezmoi git zsh
+    install_macos_dependencies
     ;;
   Linux)
-    if ! command -v curl >/dev/null 2>&1; then
-      printf '%s\n' "curl is required to bootstrap chezmoi on Linux. Install curl and retry."
+    install_linux_dependencies
+
+    if ! have_command curl; then
+      printf '%s\n' "curl is required to fetch chezmoi on Linux. Install curl and retry."
       exit 1
     fi
     ;;
@@ -28,6 +192,18 @@ case "$(uname -s)" in
     exit 1
     ;;
 esac
+
+if have_command curl && have_command git; then
+  install_oh_my_zsh
+  install_oh_my_zsh_plugins
+else
+  printf '%s\n' "curl and git are required to install Oh My Zsh and its plugins."
+  exit 1
+fi
+
+if [ "$install_only" -eq 1 ]; then
+  exit 0
+fi
 
 if command -v chezmoi >/dev/null 2>&1; then
   chezmoi init --apply "$repo_url"
