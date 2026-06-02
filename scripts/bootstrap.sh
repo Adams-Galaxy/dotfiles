@@ -40,6 +40,50 @@ have_command() {
   command -v "$1" >/dev/null 2>&1
 }
 
+current_login_shell() {
+  case "$(uname -s)" in
+    Darwin)
+      dscl . -read "/Users/$(id -un)" UserShell 2>/dev/null | awk '{print $2}'
+      ;;
+    Linux)
+      getent passwd "$(id -un)" | awk -F: '{print $7}'
+      ;;
+    *)
+      printf '%s\n' ""
+      ;;
+  esac
+}
+
+ensure_default_shell_is_zsh() {
+  zsh_path="$(command -v zsh 2>/dev/null || true)"
+
+  if [ -z "$zsh_path" ]; then
+    return 0
+  fi
+
+  if [ "$(current_login_shell)" = "$zsh_path" ]; then
+    return 0
+  fi
+
+  case "$(uname -s)" in
+    Linux)
+      if have_command usermod; then
+        run_as_root usermod -s "$zsh_path" "$(id -un)"
+      elif have_command chsh; then
+        run_as_root chsh -s "$zsh_path" "$(id -un)"
+      else
+        printf '%s\n' "zsh was installed, but no shell-change tool was found."
+        printf '%s\n' "Set your login shell to $(printf '%s' "$zsh_path") manually."
+      fi
+      ;;
+    Darwin)
+      if have_command chsh; then
+        chsh -s "$zsh_path" "$(id -un)" || true
+      fi
+      ;;
+  esac
+}
+
 run_as_root() {
   if [ "$(id -u)" -eq 0 ]; then
     "$@"
@@ -181,6 +225,7 @@ case "$(uname -s)" in
     ;;
   Linux)
     install_linux_dependencies
+    ensure_default_shell_is_zsh
 
     if ! have_command curl; then
       printf '%s\n' "curl is required to fetch chezmoi on Linux. Install curl and retry."
