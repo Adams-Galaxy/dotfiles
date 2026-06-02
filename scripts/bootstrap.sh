@@ -166,8 +166,61 @@ install_yazi_if_missing() {
   fi
 }
 
+refresh_debian_griffo_repo_key() {
+  key_file="/etc/apt/trusted.gpg.d/debian.griffo.io.gpg"
+
+  if ! have_command curl || ! have_command gpg; then
+    return 0
+  fi
+
+  key_tmp="$(mktemp /tmp/debian-griffo-key.XXXXXX.asc)"
+  if ! curl -fsSL -o "$key_tmp" "https://debian.griffo.io/EA0F721D231FDD3A0A17B9AC7808B4DD62C41256.asc"; then
+    rm -f "$key_tmp"
+    return 0
+  fi
+
+  run_as_root gpg --dearmor --yes -o "$key_file" "$key_tmp" || true
+  rm -f "$key_tmp"
+}
+
+disable_debian_griffo_sources() {
+  disabled_any=0
+
+  for source_file in /etc/apt/sources.list.d/*; do
+    [ -f "$source_file" ] || continue
+
+    if grep -q "debian.griffo.io" "$source_file"; then
+      disabled_file="${source_file}.disabled-by-bootstrap"
+      run_as_root mv "$source_file" "$disabled_file"
+      printf '%s\n' "Disabled broken apt source: $source_file"
+      disabled_any=1
+    fi
+  done
+
+  [ "$disabled_any" -eq 1 ]
+}
+
+safe_apt_update() {
+  if run_as_root apt-get update; then
+    return 0
+  fi
+
+  refresh_debian_griffo_repo_key
+  if run_as_root apt-get update; then
+    return 0
+  fi
+
+  if disable_debian_griffo_sources; then
+    printf '%s\n' "Retrying apt update after disabling debian.griffo.io sources..."
+    run_as_root apt-get update
+    return $?
+  fi
+
+  return 1
+}
+
 install_packages_with_apt() {
-  run_as_root apt-get update
+  safe_apt_update
   for package in "$@"; do
     if ! run_as_root apt-get install -y "$package"; then
       printf '%s\n' "Skipping unavailable apt package: $package"
