@@ -1,0 +1,6 @@
+{{- /* Target: ~/.zshrc */ -}}
+
+# Load the chezmoi-managed Zsh config.
+if [ -f "$HOME/.config/zsh/.zshrc" ]; then
+  source "$HOME/.config/zsh/.zshrc"
+fi
