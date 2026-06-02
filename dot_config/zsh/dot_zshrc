@@ -31,4 +31,9 @@ fi
 
 source "$DOTFILES/env/prompt.zsh"
 source "$DOTFILES/env/splash.zsh"
+
+if [[ -o interactive ]]; then
+  splash
+fi
+
 source "$DOTFILES/env/aliases.zsh"
