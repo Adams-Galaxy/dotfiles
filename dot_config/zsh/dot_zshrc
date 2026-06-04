@@ -32,7 +32,7 @@ fi
 source "$DOTFILES/env/prompt.zsh"
 source "$DOTFILES/env/splash.zsh"
 
-if [[ -o interactive ]]; then
+if [[ -o interactive && "$TERM_PROGRAM" != "vscode" ]]; then
   clear
   splash
 fi
