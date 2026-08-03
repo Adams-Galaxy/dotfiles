@@ -1,5 +1,5 @@
 ##### TMUX Configuration File ####################################
-
+set-option -sa terminal-overrides ",xterm*:Tc"
 
 ##### Prefix #####################################################
 
@@ -43,9 +43,9 @@ set -g renumber-windows on
 unbind c
 bind c new-window -c "#{pane_current_path}"
 
-# Navigate windows with Prefix + Left/Right
-bind -r Left  previous-window
-bind -r Right next-window
+# Shift arrow to switch windows
+bind -n S-Left  previous-window
+bind -n S-Right next-window
 
 # Alternative window navigation
 bind -r p previous-window
@@ -70,6 +70,12 @@ bind j select-pane -D
 bind k select-pane -U
 bind l select-pane -R
 
+# Navigate panes with Ctrl + Shift + arrow, without the prefix
+bind -n C-S-Left  select-pane -L
+bind -n C-S-Right select-pane -R
+bind -n C-S-Up    select-pane -U
+bind -n C-S-Down  select-pane -D
+
 # Resize panes with Prefix + Shift-h/j/k/l
 bind -r H resize-pane -L 5
 bind -r J resize-pane -D 5
@@ -89,17 +95,22 @@ bind z resize-pane -Z
 bind q display-panes
 
 
-##### Copy mode and macOS clipboard ##############################
+##### Copy mode and clipboard ####################################
+
+# Allow tmux to use the terminal clipboard when supported
+set -s set-clipboard on
+
 
 # Send tmux copies to the macOS clipboard
 set -s copy-command "pbcopy"
+
 
 # Vim-style selection controls
 bind -T copy-mode-vi v send-keys -X begin-selection
 bind -T copy-mode-vi V send-keys -X select-line
 bind -T copy-mode-vi y send-keys -X copy-pipe-and-cancel
 
-# Mouse drag selection copies to the macOS clipboard
+# Mouse drag selection copies to the configured clipboard
 bind -T copy-mode-vi MouseDragEnd1Pane \
     send-keys -X copy-pipe-and-cancel
 
@@ -140,6 +151,25 @@ set -g display-panes-time 1500
 # Plugin manager
 set -g @plugin 'tmux-plugins/tpm'
 
+# Gruvbox Dark Hard theme
+set -g @plugin 'Adams-Galaxy/gruvbox-tmux'
+set -g @gruvbox_flavour 'dark-hard'
+set -g @gruvbox_host 'on'
+set -g @gruvbox_date_time '%I:%M %p'
+set -g @gruvbox_prefix 'on'
+set -g @gruvbox_cpu 'on'
+set -g @gruvbox_battery 'on'
+
+# Nerd Font battery charge tiers
+set -g @batt_icon_charge_tier1 '󰁺'
+set -g @batt_icon_charge_tier2 '󰁻'
+set -g @batt_icon_charge_tier3 '󰁼'
+set -g @batt_icon_charge_tier4 '󰁽'
+set -g @batt_icon_charge_tier5 '󰁾'
+set -g @batt_icon_charge_tier6 '󰁿'
+set -g @batt_icon_charge_tier7 '󰂀'
+set -g @batt_icon_charge_tier8 '󰁹'
+
 # Preserve workspaces across restarts
 set -g @plugin 'tmux-plugins/tmux-resurrect'
 set -g @plugin 'tmux-plugins/tmux-continuum'
@@ -151,11 +181,27 @@ set -g @plugin 'christoomey/vim-tmux-navigator'
 set -g @plugin 'tmux-plugins/tmux-cpu'
 set -g @plugin 'tmux-plugins/tmux-battery'
 
+# Color scheme and copy to system clipboard
+set -g @plugin 'tmux-plugins/tmux-yank'
+
+# Sensible defaults for tmux
+set -g @plugin 'tmux-plugins/tmux-sensible'
+
 # Prefix, copy-mode, and synchronized-pane indicators
 set -g @plugin 'tmux-plugins/tmux-prefix-highlight'
 
 set -g @prefix_highlight_show_copy_mode 'on'
 set -g @prefix_highlight_show_sync_mode 'on'
+set -g @prefix_highlight_fg '#ebdbb2'
+set -g @prefix_highlight_bg '#d65d0e'
+set -g @prefix_highlight_copy_mode_attr 'fg=#fabd2f,bg=#d65d0e,bold'
+set -g @prefix_highlight_sync_mode_attr 'fg=#b8bb26,bg=#d65d0e,bold'
+set -g @prefix_highlight_output_prefix ' '
+set -g @prefix_highlight_output_suffix ' '
+
+# Session management
+set -g @plugin 'omerxx/tmux-sessionx'
+set -g @sessionx-fzf-builtin-tmux 'on'
 
 # Automatically save and restore tmux sessions
 set -g @continuum-restore 'on'

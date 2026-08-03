@@ -1,0 +1,21 @@
+#!/usr/bin/env sh
+set -eu
+
+if ! command -v git >/dev/null 2>&1 || ! command -v tmux >/dev/null 2>&1; then
+  exit 0
+fi
+
+tpm_dir="$HOME/.tmux/plugins/tpm"
+
+if [ ! -x "$tpm_dir/tpm" ]; then
+  if [ -e "$tpm_dir" ]; then
+    printf '%s\n' "Cannot install TPM: $tpm_dir exists but does not contain a TPM executable." >&2
+    exit 1
+  fi
+
+  mkdir -p "$(dirname "$tpm_dir")"
+  git clone --depth=1 https://github.com/tmux-plugins/tpm "$tpm_dir"
+fi
+
+export TMUX_PLUGIN_MANAGER_PATH="$HOME/.tmux/plugins/"
+"$tpm_dir/bin/install_plugins"

@@ -12,5 +12,6 @@
    - install Homebrew automatically on macOS if needed
    - install Oh My Zsh and the custom plugins
    - install Yazi via distro packages, with an official GitHub `.deb` fallback on apt-based Linux when package repos don't provide it
+   - install tmux, TPM, and the configured tmux plugins
    - install the shell tools and completions
 4. Open a new shell.

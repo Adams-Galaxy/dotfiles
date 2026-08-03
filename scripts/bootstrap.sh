@@ -10,9 +10,9 @@ if [ -f "$packages_file" ]; then
   . "$packages_file"
 fi
 
-: "${MACOS_PACKAGES:=git curl zsh starship zoxide atuin direnv eza neovim yazi fastfetch fzf fd ripgrep bat gh git-delta lazygit lazydocker btop}"
-: "${LINUX_BASE_PACKAGES:=git zsh curl ca-certificates}"
-: "${LINUX_TOOL_PACKAGES:=zoxide atuin direnv eza neovim yazi fastfetch fzf fd ripgrep bat gh lazygit lazydocker btop}"
+: "${MACOS_PACKAGES:=git curl zsh starship zoxide atuin direnv eza neovim yazi fastfetch fzf fd ripgrep bat gh git-delta lazygit lazydocker btop tmux}"
+: "${LINUX_BASE_PACKAGES:=git zsh bash curl ca-certificates}"
+: "${LINUX_TOOL_PACKAGES:=zoxide atuin direnv eza neovim yazi fastfetch fzf fd ripgrep bat gh lazygit lazydocker btop tmux}"
 : "${APT_EXTRA_PACKAGES:=delta}"
 : "${DNF_EXTRA_PACKAGES:=delta}"
 : "${PACMAN_EXTRA_PACKAGES:=git-delta}"

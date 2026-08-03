@@ -5,7 +5,7 @@ if command -v starship >/dev/null 2>&1; then
 fi
 
 if command -v zoxide >/dev/null 2>&1; then
-  eval "$(zoxide init zsh)"
+  eval "$(zoxide init --cmd cd zsh)"
 fi
 
 if command -v atuin >/dev/null 2>&1; then
