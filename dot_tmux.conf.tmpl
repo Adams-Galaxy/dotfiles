@@ -43,9 +43,11 @@ set -g renumber-windows on
 unbind c
 bind c new-window -c "#{pane_current_path}"
 
-# Shift arrow to switch windows
-bind -n S-Left  previous-window
-bind -n S-Right next-window
+# Alt+Shift arrow to switch windows
+# (plain Shift+Arrow is reserved in case an editor ever binds it for
+# text selection - Alt+Shift avoids relying on that staying unclaimed)
+bind -n M-S-Left  previous-window
+bind -n M-S-Right next-window
 
 # Alternative window navigation
 bind -r p previous-window
@@ -93,6 +95,11 @@ bind z resize-pane -Z
 
 # Show pane numbers for quick selection
 bind q display-panes
+
+# Clear the screen and scrollback of the current pane only
+# (Caps Lock (Hyper) + K, remapped to F13 by Karabiner so it's terminal-agnostic;
+# terminals encode F13 as the legacy VT220 sequence for Shift+F1)
+bind -n S-F1 send-keys 'C-l' \; clear-history
 
 
 ##### Copy mode and clipboard ####################################

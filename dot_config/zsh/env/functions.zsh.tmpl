@@ -6,6 +6,7 @@ export GPIP_GITHUB_USER="{{ .github_username }}"
 export GPIP_GITHUB_USER="Adams-Galaxy"
 {{- end }}
 
+# Yazi wrapper function
 y() {
   local tmp
   local cwd
@@ -29,6 +30,7 @@ y() {
   rm -f -- "$tmp"
 }
 
+# Yazi wrapper function with sudo
 sy() {
   local tmp
   local cwd
@@ -52,6 +54,7 @@ sy() {
   rm -f -- "$tmp"
 }
 
+# Virtual environment creation and activation function
 venv() {
   local dir="${1:-.}"
   local venv_path="$dir/.venv"
@@ -64,6 +67,7 @@ venv() {
   source "$venv_path/bin/activate"
 }
 
-dotfiles() {
-  y "$CHEZMOI_SOURCE_DIR"
+# Get Enviroment Variables
+envn() {
+  env | cut -d= -f1 | sort
 }

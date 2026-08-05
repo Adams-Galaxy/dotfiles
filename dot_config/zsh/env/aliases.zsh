@@ -99,8 +99,11 @@ alias gb="git branch"
 alias gco="git checkout"
 alias gsw="git switch"
 
-alias zshrld="source ~/.zshrc"
-alias rld="source ~/.zshrc"
+# Zsh reload alias
+alias zr="source ~/.zshrc"
+
+# Because zoxide --cmd is set to "cd", so we preserve "z" for still function as default z
+alias z="cd"
 
 valiases() {
   gui_edit "$CHEZMOI_ZSH_ENV_DIR/aliases.zsh"

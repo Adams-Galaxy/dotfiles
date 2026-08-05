@@ -3,22 +3,69 @@ set -eu
 
 repo_dir="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
 repo_url="${CHEZMOI_REPO_URL:-${1:-}}"
+profile="${DOTFILES_PROFILE:-personal}"
+export DOTFILES_PROFILE="$profile"
 install_only=0
 packages_file="$repo_dir/scripts/packages.sh"
+packages_manifest="$repo_dir/scripts/packages.conf"
 
 if [ -f "$packages_file" ]; then
   . "$packages_file"
 fi
 
-: "${MACOS_PACKAGES:=git curl zsh starship zoxide atuin direnv eza neovim yazi fastfetch fzf fd ripgrep bat gh git-delta lazygit lazydocker btop tmux}"
-: "${LINUX_BASE_PACKAGES:=git zsh bash curl ca-certificates}"
-: "${LINUX_TOOL_PACKAGES:=zoxide atuin direnv eza neovim yazi fastfetch fzf fd ripgrep bat gh lazygit lazydocker btop tmux}"
-: "${APT_EXTRA_PACKAGES:=delta}"
-: "${DNF_EXTRA_PACKAGES:=delta}"
-: "${PACMAN_EXTRA_PACKAGES:=git-delta}"
-: "${ZYPPER_EXTRA_PACKAGES:=git-delta}"
-: "${APK_EXTRA_PACKAGES:=git-delta}"
 : "${OMZ_PLUGINS:=zsh-autosuggestions zsh-syntax-highlighting zsh-completions}"
+
+# Prints package names from packages.conf for the given OS (macos,
+# linux), package-manager key (brew, apt, dnf, pacman, zypper, apk),
+# and active profile, one per line, applying any per-manager name
+# override. A package row always needs to match the OS; it only needs
+# to match the profile if the row opts into a profile restriction (any
+# tag beyond macos/linux) - untagged packages install under every
+# profile.
+manifest_packages() {
+  os="$1"
+  manager="$2"
+  active_profile="$3"
+
+  if [ ! -f "$packages_manifest" ]; then
+    printf '%s\n' "Missing package manifest: $packages_manifest" >&2
+    return 1
+  fi
+
+  awk -v os="$os" -v manager="$manager" -v active_profile="$active_profile" '
+    /^[[:space:]]*#/ { next }
+    NF == 0 { next }
+    {
+      name = $1
+      pkg = name
+
+      split($2, tags, ",")
+      has_os = 0
+      has_profile_tag = 0
+      profile_matched = 0
+      for (i in tags) {
+        tag = tags[i]
+        if (tag == "macos" || tag == "linux") {
+          if (tag == os) { has_os = 1 }
+        } else {
+          has_profile_tag = 1
+          if (tag == active_profile) { profile_matched = 1 }
+        }
+      }
+      if (!has_os) next
+      if (has_profile_tag && !profile_matched) next
+
+      if ($3 != "-") {
+        split($3, opairs, ",")
+        for (i in opairs) {
+          split(opairs[i], kv, "=")
+          if (kv[1] == manager) { pkg = kv[2] }
+        }
+      }
+      print pkg
+    }
+  ' "$packages_manifest"
+}
 
 if [ "${1:-}" = "--install-only" ]; then
   install_only=1
@@ -282,7 +329,7 @@ install_macos_dependencies() {
     return 1
   fi
 
-  brew install $MACOS_PACKAGES
+  brew install $(manifest_packages macos brew "$profile")
 }
 
 install_oh_my_zsh() {
@@ -323,16 +370,16 @@ install_oh_my_zsh_plugins() {
 
 install_linux_dependencies() {
   if have_command apt-get; then
-    install_packages_with_apt $LINUX_BASE_PACKAGES $LINUX_TOOL_PACKAGES $APT_EXTRA_PACKAGES
+    install_packages_with_apt $(manifest_packages linux apt "$profile")
     install_yazi_if_missing
   elif have_command dnf; then
-    install_packages_with_dnf $LINUX_BASE_PACKAGES $LINUX_TOOL_PACKAGES $DNF_EXTRA_PACKAGES
+    install_packages_with_dnf $(manifest_packages linux dnf "$profile")
   elif have_command pacman; then
-    install_packages_with_pacman $LINUX_BASE_PACKAGES $LINUX_TOOL_PACKAGES $PACMAN_EXTRA_PACKAGES
+    install_packages_with_pacman $(manifest_packages linux pacman "$profile")
   elif have_command zypper; then
-    install_packages_with_zypper $LINUX_BASE_PACKAGES $LINUX_TOOL_PACKAGES $ZYPPER_EXTRA_PACKAGES
+    install_packages_with_zypper $(manifest_packages linux zypper "$profile")
   elif have_command apk; then
-    install_packages_with_apk $LINUX_BASE_PACKAGES $LINUX_TOOL_PACKAGES $APK_EXTRA_PACKAGES
+    install_packages_with_apk $(manifest_packages linux apk "$profile")
   else
     printf '%s\n' "No supported Linux package manager was found."
     printf '%s\n' "Install git, zsh, curl, and ca-certificates manually, then rerun this script."
@@ -377,7 +424,7 @@ if [ "$install_only" -eq 1 ]; then
 fi
 
 if command -v chezmoi >/dev/null 2>&1; then
-  chezmoi init --apply "$repo_url"
+  chezmoi init --apply --promptString "profile=$profile" "$repo_url"
 else
-  sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply "$repo_url"
+  sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply --promptString "profile=$profile" "$repo_url"
 fi

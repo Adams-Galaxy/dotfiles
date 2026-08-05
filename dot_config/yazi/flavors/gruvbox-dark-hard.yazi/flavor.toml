@@ -30,8 +30,8 @@ border_style = { fg = "#928374" }
 # : Tabs {{{
 
 [tabs]
-active = { fg = "#1d2021", bg = "#83a598", bold = true }
-inactive = { fg = "#83a598", bg = "#3c3836" }
+active = { fg = "#1d2021", bg = "#fabd2f", bold = true }
+inactive = { fg = "#fabd2f", bg = "#3c3836" }
 
 # : }}}
 
@@ -40,12 +40,12 @@ inactive = { fg = "#83a598", bg = "#3c3836" }
 
 [mode]
 
-normal_main = { fg = "#1d2021", bg = "#83a598", bold = true }
-normal_alt = { fg = "#83a598", bg = "#3c3836" }
+normal_main = { fg = "#1d2021", bg = "#fabd2f", bold = true }
+normal_alt = { fg = "#fabd2f", bg = "#3c3836" }
 
 # Select mode
-select_main = { fg = "#1d2021", bg = "#8ec07c", bold = true }
-select_alt = { fg = "#8ec07c", bg = "#3c3836" }
+select_main = { fg = "#1d2021", bg = "#83a598", bold = true }
+select_alt = { fg = "#83a598", bg = "#3c3836" }
 
 # Unset mode
 unset_main = { fg = "#1d2021", bg = "#fb4934", bold = true }
@@ -75,7 +75,7 @@ progress_error = { fg = "#fabd2f", bg = "#fb4934" }
 # : Pick {{{
 
 [pick]
-border = { fg = "#83a598" }
+border = { fg = "#665c54" }
 active = { fg = "#d3869b", bold = true }
 inactive = {}
 
@@ -85,7 +85,7 @@ inactive = {}
 # : Input {{{
 
 [input]
-border = { fg = "#83a598" }
+border = { fg = "#665c54" }
 title = {}
 value = {}
 selected = { reversed = true }
@@ -96,7 +96,7 @@ selected = { reversed = true }
 # : Completion {{{
 
 [cmp]
-border = { fg = "#83a598" }
+border = { fg = "#665c54" }
 
 # : }}}
 
@@ -104,7 +104,7 @@ border = { fg = "#83a598" }
 # : Tasks {{{
 
 [tasks]
-border = { fg = "#83a598" }
+border = { fg = "#665c54" }
 title = {}
 hovered = { fg = "#d3869b", bold = true }
 
@@ -115,7 +115,7 @@ hovered = { fg = "#d3869b", bold = true }
 
 [which]
 mask = { bg = "#3c3836" }
-cand = { fg = "#8ec07c" }
+cand = { fg = "#83a598" }
 rest = { fg = "#a89984" }
 desc = { fg = "#d3869b" }
 separator = "  "
@@ -127,7 +127,7 @@ separator_style = { fg = "#7c6f64" }
 # : Help {{{
 
 [help]
-on = { fg = "#8ec07c" }
+on = { fg = "#83a598" }
 run = { fg = "#d3869b" }
 hovered = { reversed = true, bold = true }
 footer = { fg = "#3c3836", bg = "#d5c4a1" }
@@ -138,9 +138,9 @@ footer = { fg = "#3c3836", bg = "#d5c4a1" }
 # : Spotter {{{
 
 [spot]
-border = { fg = "#83a598" }
-title = { fg = "#83a598" }
-tbl_col = { fg = "#8ec07c" }
+border = { fg = "#665c54" }
+title = { fg = "#665c54" }
+tbl_col = { fg = "#83a598" }
 tbl_cell = { fg = "#d3869b", bg = "#504945" }
 
 # : }}}
@@ -173,7 +173,7 @@ rules = [
     { mime = "vfs/{absent,stale}", fg = "#a89984" },
     # Fallback
     { url = "*", fg = "#d5c4a1" },
-    { url = "*/", fg = "#83a598" },
+    { url = "*/", fg = "#8ec07c" },
 ]
 
 # : }}}
@@ -182,19 +182,19 @@ rules = [
 
 dirs = [
     { name = ".config", text = "", fg = "#d3869b" },
-    { name = ".git", text = "", fg = "#8ec07c" },
-    { name = ".github", text = "", fg = "#83a598" },
-    { name = ".npm", text = "", fg = "#83a598" },
-    { name = "Desktop", text = "", fg = "#8ec07c" },
-    { name = "Development", text = "", fg = "#8ec07c" },
-    { name = "Documents", text = "", fg = "#8ec07c" },
-    { name = "Downloads", text = "", fg = "#8ec07c" },
-    { name = "Library", text = "", fg = "#8ec07c" },
-    { name = "Movies", text = "", fg = "#8ec07c" },
+    { name = ".git", text = "", fg = "#fe8019" },
+    { name = ".github", text = "", fg = "#fe8019" },
+    { name = ".npm", text = "", fg = "#fb4934" },
+    { name = "Desktop", text = "", fg = "#83a598" },
+    { name = "Development", text = "", fg = "#fe8019" },
+    { name = "Documents", text = "", fg = "#fabd2f" },
+    { name = "Downloads", text = "", fg = "#b8bb26" },
+    { name = "Library", text = "", fg = "#d3869b" },
+    { name = "Movies", text = "", fg = "#fb4934" },
     { name = "Music", text = "", fg = "#8ec07c" },
-    { name = "Pictures", text = "", fg = "#8ec07c" },
-    { name = "Public", text = "", fg = "#8ec07c" },
-    { name = "Videos", text = "", fg = "#8ec07c" },
+    { name = "Pictures", text = "", fg = "#83a598" },
+    { name = "Public", text = "", fg = "#b8bb26" },
+    { name = "Videos", text = "", fg = "#fb4934" },
 ]
 conds = [
     # Special files
@@ -208,7 +208,7 @@ conds = [
     { if = "dummy", text = "", fg = "#fb4934" },
 
     # Fallback
-    { if = "dir", text = "", fg = "#83a598" },
+    { if = "dir", text = "", fg = "#8ec07c" },
     { if = "exec", text = "", fg = "#b8bb26" },
     { if = "!dir", text = "", fg = "#d5c4a1" },
 ]

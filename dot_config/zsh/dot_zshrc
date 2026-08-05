@@ -8,6 +8,10 @@ source "$DOTFILES/env/common.zsh"
 source "$DOTFILES/env/path.zsh"
 source "$DOTFILES/env/completion.zsh"
 source "$DOTFILES/env/functions.zsh"
+source "$DOTFILES/env/fzf.zsh"
+source "$DOTFILES/env/fzf-git.zsh"
+source "$DOTFILES/env/dotpkg.zsh"
+source "$DOTFILES/env/chezmoi.zsh"
 source "$DOTFILES/env/projects.zsh"
 
 # OS-specific config
@@ -32,7 +36,7 @@ fi
 source "$DOTFILES/env/prompt.zsh"
 source "$DOTFILES/env/splash.zsh"
 
-if [[ -o interactive && "$TERM_PROGRAM" != "vscode" ]]; then
+if [[ -o interactive ]] && ! splash_should_skip; then
   clear
   splash
 fi
