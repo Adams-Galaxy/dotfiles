@@ -4,6 +4,14 @@
 
 local map = vim.keymap.set
 
+-- Escape insert mode without leaving home row
+map("i", "jk", "<Esc>", { desc = "Exit insert mode" })
+
+-- Disable arrow keys to force hjkl
+for _, key in ipairs({ "<Up>", "<Down>", "<Left>", "<Right>" }) do
+  map({ "n", "i", "v" }, key, "<Nop>", { desc = "Disabled (use hjkl)" })
+end
+
 -- Window resizing
 map("n", "<C-Up>", "<cmd>resize +2<CR>", { desc = "Increase window height" })
 map("n", "<C-Down>", "<cmd>resize -2<CR>", { desc = "Decrease window height" })

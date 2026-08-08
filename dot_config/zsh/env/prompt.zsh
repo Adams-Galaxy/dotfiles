@@ -1,17 +1,22 @@
 # Prompt and shell tool startup
+#
+# Each of these ships its shell integration via `<tool> init zsh`, which
+# means a subprocess per tool on every startup. cache_init (common.zsh)
+# stores the generated code and re-runs the tool only when its binary
+# changes, so the steady-state cost is a plain source.
 
-if command -v starship >/dev/null 2>&1; then
-  eval "$(starship init zsh)"
+if (( ${+commands[starship]} )); then
+  cache_init starship starship init zsh
 fi
 
-if command -v zoxide >/dev/null 2>&1; then
-  eval "$(zoxide init --cmd cd zsh)"
+if (( ${+commands[zoxide]} )); then
+  cache_init zoxide zoxide init --cmd cd zsh
 fi
 
-if command -v atuin >/dev/null 2>&1; then
-  eval "$(atuin init zsh)"
+if (( ${+commands[atuin]} )); then
+  cache_init atuin atuin init zsh
 fi
 
-if command -v direnv >/dev/null 2>&1; then
-  eval "$(direnv hook zsh)"
+if (( ${+commands[direnv]} )); then
+  cache_init direnv direnv hook zsh
 fi

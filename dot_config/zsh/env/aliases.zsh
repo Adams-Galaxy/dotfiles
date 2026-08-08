@@ -1,6 +1,5 @@
 # Common aliases
 
-alias cls="clear"
 alias c="clear && printf '\e[3J'"
 alias q="exit"
 
@@ -101,30 +100,8 @@ alias gsw="git switch"
 
 # Zsh reload alias
 alias zr="source ~/.zshrc"
+alias zrst="clear && printf '\e[3J' && exec zsh -l"
 
 # Because zoxide --cmd is set to "cd", so we preserve "z" for still function as default z
 alias z="cd"
 
-valiases() {
-  gui_edit "$CHEZMOI_ZSH_ENV_DIR/aliases.zsh"
-}
-
-vmacros() {
-  gui_edit "$CHEZMOI_ZSH_ENV_DIR/functions.zsh.tmpl"
-}
-
-zshcfg() {
-  edit "$CHEZMOI_SOURCE_DIR/dot_zshrc"
-}
-
-sshkeys() {
-  edit "$HOME/.ssh/authorized_keys"
-}
-
-aliases() {
-  edit "$CHEZMOI_ZSH_ENV_DIR/aliases.zsh"
-}
-
-macros() {
-  edit "$CHEZMOI_ZSH_ENV_DIR/functions.zsh.tmpl"
-}

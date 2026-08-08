@@ -49,6 +49,10 @@ bind c new-window -c "#{pane_current_path}"
 bind -n M-S-Left  previous-window
 bind -n M-S-Right next-window
 
+# Vim-style alternative to the above
+bind -n M-h previous-window
+bind -n M-l next-window
+
 # Alternative window navigation
 bind -r p previous-window
 bind -r n next-window
@@ -101,6 +105,18 @@ bind q display-panes
 # terminals encode F13 as the legacy VT220 sequence for Shift+F1)
 bind -n S-F1 send-keys 'C-l' \; clear-history
 
+# Toggle broadcasting keystrokes to every pane in the current window
+bind S setw synchronize-panes \; display-message "synchronize-panes #{?pane_synchronized,on,off}"
+
+# Clear and re-run each pane's own setup command in one shot. Sync mode
+# broadcasts the same literal keystrokes to every pane, but each pane's
+# shell expands $PANE_SETUP against its own environment, so per-pane
+# scripts set via `export PANE_SETUP=./setup-frontend.sh` (etc.) still
+# run correctly even though the command text sent is identical. Panes
+# that never set PANE_SETUP just clear and stay idle, no error (the
+# ${PANE_SETUP:-} default also keeps this safe under `set -u`).
+bind R setw synchronize-panes on \; send-keys 'clear; [ -n "${PANE_SETUP:-}" ] && eval "$PANE_SETUP"' Enter \; setw synchronize-panes off
+
 
 ##### Copy mode and clipboard ####################################
 
@@ -125,6 +141,7 @@ bind -T copy-mode-vi MouseDragEnd1Pane \
 ##### Status bar #################################################
 
 set -g status on
+set -g status-position top
 set -g status-interval 5
 
 # Session name on the left
@@ -151,6 +168,24 @@ set -g display-time 2000
 
 # Keep pane-number overlays visible slightly longer
 set -g display-panes-time 1500
+
+
+##### Popups #####################################################
+
+# Popups host fzf (fzf-tab completion, sessionx). Rather than have both
+# tmux and fzf draw a frame, tmux owns the border everywhere and fzf runs
+# borderless inside it — see dot_config/zsh/env/fzf-tab.zsh. Keeping the
+# border here (instead of disabling it globally) means popups that aren't
+# fzf still get a frame.
+set -g popup-border-lines rounded
+
+# Match fzf's own border colour (--color=border:#665c54 in common.zsh) so a
+# tmux-drawn frame is indistinguishable from an fzf-drawn one.
+set -g popup-border-style 'fg=#665c54'
+
+# Inherit the terminal background rather than painting a solid panel, to
+# match the transparent status bar.
+set -g popup-style 'bg=default'
 
 
 ##### Plugins ####################################################
@@ -209,6 +244,9 @@ set -g @prefix_highlight_output_suffix ' '
 # Session management
 set -g @plugin 'omerxx/tmux-sessionx'
 set -g @sessionx-fzf-builtin-tmux 'on'
+# Defaults to Shift-O; lowercase is easier to hit alongside the rest of
+# the prefix bindings.
+set -g @sessionx-bind 'o'
 
 # Automatically save and restore tmux sessions
 set -g @continuum-restore 'on'

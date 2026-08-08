@@ -13,8 +13,6 @@ if [ -f "$packages_file" ]; then
   . "$packages_file"
 fi
 
-: "${OMZ_PLUGINS:=zsh-autosuggestions zsh-syntax-highlighting zsh-completions}"
-
 # Prints package names from packages.conf for the given OS (macos,
 # linux), package-manager key (brew, apt, dnf, pacman, zypper, apk),
 # and active profile, one per line, applying any per-manager name
@@ -332,40 +330,21 @@ install_macos_dependencies() {
   brew install $(manifest_packages macos brew "$profile")
 }
 
-install_oh_my_zsh() {
-  if [ -f "$HOME/.oh-my-zsh/oh-my-zsh.sh" ]; then
+# Plugins themselves are declared in dot_config/zsh/zsh_plugins.txt and
+# cloned by antidote on first shell start, so nothing to clone here. On
+# macOS antidote comes from packages.conf via brew; elsewhere, clone it.
+install_antidote() {
+  if [ -f "$HOME/.antidote/antidote.zsh" ]; then
     return 0
   fi
 
-  env RUNZSH=no CHSH=no KEEP_ZSHRC=yes sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-}
-
-clone_plugin() {
-  plugin_name="$1"
-  plugin_repo="$2"
-  plugin_dir="$HOME/.oh-my-zsh/custom/plugins/$plugin_name"
-
-  if [ -d "$plugin_dir" ]; then
-    return 0
-  fi
-
-  git clone --depth=1 "$plugin_repo" "$plugin_dir"
-}
-
-install_oh_my_zsh_plugins() {
-  for plugin in $OMZ_PLUGINS; do
-    case "$plugin" in
-      zsh-autosuggestions)
-        clone_plugin "$plugin" https://github.com/zsh-users/zsh-autosuggestions.git
-        ;;
-      zsh-syntax-highlighting)
-        clone_plugin "$plugin" https://github.com/zsh-users/zsh-syntax-highlighting.git
-        ;;
-      zsh-completions)
-        clone_plugin "$plugin" https://github.com/zsh-users/zsh-completions.git
-        ;;
-    esac
+  for prefix in "${HOMEBREW_PREFIX:-/opt/homebrew}" /opt/homebrew /usr/local; do
+    if [ -f "$prefix/opt/antidote/share/antidote/antidote.zsh" ]; then
+      return 0
+    fi
   done
+
+  git clone --depth=1 https://github.com/mattmc3/antidote.git "$HOME/.antidote"
 }
 
 install_linux_dependencies() {
@@ -412,10 +391,9 @@ case "$(uname -s)" in
 esac
 
 if have_command curl && have_command git; then
-  install_oh_my_zsh
-  install_oh_my_zsh_plugins
+  install_antidote
 else
-  printf '%s\n' "curl and git are required to install Oh My Zsh and its plugins."
+  printf '%s\n' "curl and git are required to install antidote."
   exit 1
 fi
 

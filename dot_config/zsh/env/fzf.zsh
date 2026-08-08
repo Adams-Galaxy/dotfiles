@@ -251,3 +251,17 @@ fset() {
     read -r "value?Enter value for $variable: "
     export "$variable=$value"
 }
+
+# Fuzzy PATH entry selection function
+fpath() {
+    local path_entry
+
+    path_entry="$(
+        print $PATH | tr ':' '\n' |
+        fzf \
+            --prompt='fpath> ' \
+            --preview='ls -la {}'
+    )" || return
+
+    print -r -- "$path_entry"
+}

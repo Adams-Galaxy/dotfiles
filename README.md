@@ -10,7 +10,8 @@
    - create runtime directories used by Zsh
    - install zsh and make it the login shell on Linux when needed
    - install Homebrew automatically on macOS if needed
-   - install Oh My Zsh and the custom plugins
+   - install antidote (zsh plugins themselves are declared in
+     `dot_config/zsh/zsh_plugins.txt` and cloned on first shell start)
    - install Yazi via distro packages, with an official GitHub `.deb` fallback on apt-based Linux when package repos don't provide it
    - install tmux, TPM, and the configured tmux plugins
    - install the shell tools and completions

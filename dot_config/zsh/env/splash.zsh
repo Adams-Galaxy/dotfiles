@@ -9,7 +9,20 @@ SPLASH_SKIP_IN=(
   "NVIM"
 )
 
+# Below this, fastfetch's side-by-side logo+info layout wraps or truncates
+# rather than looking right.
+: ${SPLASH_MIN_COLUMNS:=80}
+: ${SPLASH_MIN_LINES:=24}
+
 splash_should_skip() {
+  if [[ -n "${ZSHRC_RELOADED:-}" ]]; then
+    return 0
+  fi
+
+  if (( COLUMNS < SPLASH_MIN_COLUMNS || LINES < SPLASH_MIN_LINES )); then
+    return 0
+  fi
+
   local entry var value
   for entry in "${SPLASH_SKIP_IN[@]}"; do
     var="${entry%%=*}"
