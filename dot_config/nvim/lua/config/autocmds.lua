@@ -8,12 +8,14 @@
 -- e.g. vim.api.nvim_del_augroup_by_name("lazyvim_wrap_spell")
 
 local function transparent()
-  local groups = { 
-    "Normal", 
-    "NormalNC", 
-    "SignColumn", 
-    "EndOfBuffer", 
-    "WinSeparator", 
+  local groups = {
+    "Normal",
+    "NormalNC",
+    "SignColumn",
+    "EndOfBuffer",
+    "WinSeparator",
+    "NormalFloat",
+    "FloatBorder",
   }
    
   for _, group in ipairs(groups) do 

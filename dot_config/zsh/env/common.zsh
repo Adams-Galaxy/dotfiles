@@ -40,3 +40,13 @@ export FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS:---height 40% --layout=reverse --bor
 --color=prompt:#fabd2f,spinner:#fabd2f \
 --color=pointer:#fabd2f,header:#83a598 \
 --color=border:#665c54,label:#ebdbb2}"
+
+# Same Gruvbox Dark palette, for gum (charmbracelet/gum — used by tmls
+# below, and anything else reaching for it later). Namespaced GUM_TABLE_*
+# env vars only, not gum style's bare $FOREGROUND/$BORDER_FOREGROUND —
+# those are too generically named to export globally without risking
+# collisions with something else expecting them unscoped.
+export GUM_TABLE_BORDER="rounded"
+export GUM_TABLE_BORDER_FOREGROUND="#665c54"
+export GUM_TABLE_HEADER_FOREGROUND="#83a598"
+export GUM_TABLE_CELL_FOREGROUND="#ebdbb2"

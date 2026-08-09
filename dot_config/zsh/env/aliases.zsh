@@ -21,10 +21,6 @@ fi
 
 if command -v tmux >/dev/null 2>&1; then
   alias tm="tmux"
-  alias tma="tmux attach -t"
-  alias tmk="tmux kill-session -t"
-  alias tmn="tmux new -s"
-  alias tmrn="tmux rename-session -t"
 fi
 
 if ! command -v fd >/dev/null 2>&1 && command -v fdfind >/dev/null 2>&1; then
@@ -40,6 +36,24 @@ edit() {
     vim "$@"
   else
     print "No terminal editor found"
+    return 127
+  fi
+}
+
+sudoedit() {
+  if command -v sudo >/dev/null 2>&1; then
+    if command -v "$SHELL_EDITOR" >/dev/null 2>&1; then
+      sudo "$SHELL_EDITOR" "$@"
+    elif command -v nvim >/dev/null 2>&1; then
+      sudo nvim "$@"
+    elif command -v vim >/dev/null 2>&1; then
+      sudo vim "$@"
+    else
+      print "No terminal editor found"
+      return 127
+    fi
+  else
+    print "sudo is not available"
     return 127
   fi
 }
@@ -60,14 +74,15 @@ e() {
   edit "$@"
 }
 
-alias p="python3"
-
-dv() {
-  source "$HOME/dev/.venv/bin/activate"
+se() {
+  sudoedit "$@"
 }
 
+# Python aliases
+alias p="python3"
+
 hosts() {
-  edit /etc/hosts
+  sudoedit /etc/hosts
 }
 
 song() {
@@ -87,6 +102,7 @@ splesh() {
   splash && "$DOTFILES/scripts/colortest.sh"
 }
 
+# Git aliases
 alias gs="git status"
 alias ga="git add"
 alias gc="git commit"

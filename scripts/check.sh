@@ -181,7 +181,7 @@ done <"$file_list"
 
 echo
 echo "== Lua files (luac -p) =="
-find dot_config/nvim -type f -name "*.lua" -print | sort >"$file_list"
+find dot_config/nvim dot_config/wezterm -type f -name "*.lua" -print | sort >"$file_list"
 while IFS= read -r f; do
   check_lua "$f"
 done <"$file_list"

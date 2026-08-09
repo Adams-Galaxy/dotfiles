@@ -1,6 +1,14 @@
 ##### TMUX Configuration File ####################################
 set-option -sa terminal-overrides ",xterm*:Tc"
 
+# Pass extended key-reporting (Kitty keyboard protocol / CSI u, enabled in
+# iTerm2's profile settings) through to whatever's running in the pane
+# instead of decoding it down to tmux's own simpler key events — otherwise
+# a program inside tmux (nvim) never sees the richer encoding that lets it
+# tell e.g. Cmd+h apart from other combinations sharing the same legacy
+# byte sequence.
+set -g extended-keys always
+
 ##### Prefix #####################################################
 
 # Replace the default Ctrl-b prefix with Ctrl-a
@@ -81,6 +89,15 @@ bind -n C-S-Left  select-pane -L
 bind -n C-S-Right select-pane -R
 bind -n C-S-Up    select-pane -U
 bind -n C-S-Down  select-pane -D
+
+# Ctrl+h/j/k/l pane crossing itself doesn't need anything here: the
+# christoomey/vim-tmux-navigator plugin is installed on *both* sides —
+# nvim's own plugin (loaded via lazy.nvim) and this tmux-side counterpart
+# (TPM, `@plugin 'christoomey/vim-tmux-navigator'` below), which registers
+# its own equivalent `is_vim`-gated bindings for these same keys when TPM
+# loads at the bottom of this file, after this point — so anything bound
+# here would just be silently overridden by the plugin's own (a version
+# that also recognises fzf panes, which a hand-rolled one here wouldn't).
 
 # Resize panes with Prefix + Shift-h/j/k/l
 bind -r H resize-pane -L 5

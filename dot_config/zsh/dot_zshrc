@@ -67,6 +67,9 @@ _load_plugin_bundle() {
 
 _load_plugin_bundle "$DOTFILES/zsh_plugins.pre.txt" "$ZSH_CACHE_DIR/zsh_plugins.pre.zsh"
 
+# Add the completions directory to fpath so compinit can find them.
+fpath=("$HOME/.config/zsh/completions" $fpath)
+
 # compinit sits between the two bundles: zsh-completions (above) contributes
 # to fpath and compinit only picks up what's in fpath when it runs, while
 # fzf-tab (below) must bind its widget after compinit exists.

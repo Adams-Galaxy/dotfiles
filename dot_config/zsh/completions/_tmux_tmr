@@ -1,0 +1,5 @@
+#compdef tmr
+
+_arguments \
+    '1:session:_tmux_sessions' \
+    '2:new session name:'

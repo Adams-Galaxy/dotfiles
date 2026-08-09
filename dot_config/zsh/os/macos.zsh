@@ -8,6 +8,12 @@ esac
 
 export STM32CubeMX_PATH="/Applications/STMicroelectronics/STM32CubeMX.app/Contents/Resources"
 
+# WezTerm.app bundles its CLI inside the app rather than installing it to
+# a standard bin dir (no cask/formula involved — see dot_config/wezterm/).
+if [[ -d "/Applications/WezTerm.app/Contents/MacOS" ]]; then
+  path_prepend "/Applications/WezTerm.app/Contents/MacOS"
+fi
+
 # Bob is my home desktop computer. Say hi to Bob!
 # Home-vs-remote hostname selection lives in ~/.ssh/config, which picks the
 # LAN address via a `Match host bob exec` SSID check. Doing it there means
