@@ -1,6 +1,11 @@
 # Common aliases
 
-alias c="clear && printf '\e[3J'"
+clear() {
+  command clear
+  printf '\e[3J'
+}
+
+alias c="clear"
 alias q="exit"
 
 if command -v rg >/dev/null 2>&1; then
@@ -118,6 +123,13 @@ alias gsw="git switch"
 alias zr="source ~/.zshrc"
 alias zrst="clear && printf '\e[3J' && exec zsh -l"
 
+# Dotfiles (chezmoi) workflow helpers
+alias cr="dotapply"
+alias crr="dotapply && zrst"
+
 # Because zoxide --cmd is set to "cd", so we preserve "z" for still function as default z
 alias z="cd"
 
+# Fastfetch alias
+alias ff="splash"
+alias cff="clear && splash"

@@ -55,5 +55,3 @@ dotapply() {
   fi
 }
 
-# Alias for dotapply
-alias cr="dotapply"

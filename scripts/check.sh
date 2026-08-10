@@ -120,6 +120,26 @@ check_lua() {
   rm -f /tmp/check_lua_err
 }
 
+check_fastfetch() {
+  file="$1"
+  if ! have_command fastfetch; then
+    skipped "$file" "fastfetch not installed"
+    return
+  fi
+  # Runs the real parser rather than a generic JSON/JSONC linter, since
+  # fastfetch's config is JSONC (comments) with its own module/format
+  # schema a generic validator wouldn't catch mistakes in anyway —
+  # --logo none/--pipe true keep this to a syntax+schema check, no ANSI
+  # noise in the output either way.
+  if fastfetch -c "$file" --logo none --pipe true >/dev/null 2>/tmp/check_fastfetch_err; then
+    ok "$file"
+  else
+    bad "$file"
+    sed 's/^/        /' /tmp/check_fastfetch_err
+  fi
+  rm -f /tmp/check_fastfetch_err
+}
+
 check_toml() {
   file="$1"
   if ! have_command python3; then
@@ -185,6 +205,11 @@ find dot_config/nvim dot_config/wezterm -type f -name "*.lua" -print | sort >"$f
 while IFS= read -r f; do
   check_lua "$f"
 done <"$file_list"
+
+echo
+echo "== fastfetch config =="
+[ -f dot_config/fastfetch/config.jsonc ] && check_fastfetch dot_config/fastfetch/config.jsonc
+[ -f dot_config/fastfetch/config-compact.jsonc ] && check_fastfetch dot_config/fastfetch/config-compact.jsonc
 
 echo
 echo "== TOML files =="

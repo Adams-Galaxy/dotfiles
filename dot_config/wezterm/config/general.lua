@@ -1,5 +1,6 @@
 -- Window size, scrollback, bell, and terminal identification — the
 -- non-visual half of the iTerm profile import.
+local wezterm = require("wezterm")
 
 return {
   prefer_egl = true, -- Default.json: 'GPU Renderer': 'OpenGL (EGL)'.
@@ -15,8 +16,8 @@ return {
   macos_fullscreen_extend_behind_notch = false,
 
   -- Default.json: Columns 80, Rows 25.
-  initial_cols = 80,
-  initial_rows = 25,
+  initial_cols = 94,
+  initial_rows = 27,
 
   -- Default.json had 'Unlimited Scrollback': false, 'Scrollback Lines':
   -- 1000 — but that's iTerm's own buffer, separate from tmux's, which is
@@ -48,4 +49,27 @@ return {
   -- macOS-specific — this file's the same idea for WezTerm, staying
   -- correct even if it starts getting used cross-platform).
   default_prog = { "/bin/zsh", "-l" },
+
+  -- Cmd+drag-to-move over a mouse-reporting pane (tmux/nvim) needs a real
+  -- mouse_bindings entry, not a bypass_mouse_reporting_modifiers tweak —
+  -- checked directly against WezTerm's own source
+  -- (wezterm-gui/src/termwindow/mouseevent.rs): that option doesn't add
+  -- an alternative trigger, it *strips those exact modifier bits from the
+  -- held modifiers* before binding lookup, and the default SUPER+Drag ->
+  -- StartWindowDrag binding (inputmap.rs) only matches when
+  -- mouse_reporting is already false. So the by-design way to reach it
+  -- while reporting is on is holding the bypass modifier (Shift, default)
+  -- *and* Cmd at once — Shift strips itself to flip reporting off, Cmd
+  -- survives that strip and matches the binding's own mods. Cmd alone
+  -- can't do both jobs simultaneously: using SUPER as the bypass modifier
+  -- would strip SUPER before lookup, leaving nothing left to match
+  -- SUPER's own binding.
+  mouse_bindings = {
+    {
+      event = { Drag = { streak = 1, button = "Left" } },
+      mods = "CMD",
+      mouse_reporting = true,
+      action = wezterm.action.StartWindowDrag,
+    },
+  },
 }

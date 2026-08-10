@@ -67,7 +67,25 @@ venv() {
   source "$venv_path/bin/activate"
 }
 
-# Get Enviroment Variables
+# Get enviroment variables
 envn() {
   env | cut -d= -f1 | sort
+}
+
+# Get terminal width
+cols() {
+  tput cols
+}
+
+# Get terminal height
+rows() {
+  tput lines
+}
+
+# Get terminal size
+tsize() {
+  local cols rows
+  cols=$(tput cols)
+  rows=$(tput lines)
+  echo "${cols} ${rows}"
 }

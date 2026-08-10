@@ -73,10 +73,10 @@ return {
   -- SUPER+drag (already a default binding) instead — so the reserved
   -- strip at the top wasn't buying anything, just pushing content down.
   window_padding = {
-    left = 20,
+    left = 30,
     right = 20,
-    top = 0,
-    bottom = 2,
+    top = 28,
+    bottom = 0,
   },
 
   -- tmux's own status bar already shows session/window info, so a second

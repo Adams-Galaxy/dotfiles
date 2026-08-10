@@ -32,7 +32,7 @@ cache_init() {
   source "$cache"
 }
 
-# Gruvbox Dark, matching the palette in starship.toml
+# Gruvbox Dark, matching the common palette
 export FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS:---height 40% --layout=reverse --border \
 --color=fg:#ebdbb2,fg+:#fbf1c7,bg+:#3c3836 \
 --color=hl:#83a598,hl+:#fe8019 \
@@ -41,7 +41,7 @@ export FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS:---height 40% --layout=reverse --bor
 --color=pointer:#fabd2f,header:#83a598 \
 --color=border:#665c54,label:#ebdbb2}"
 
-# Same Gruvbox Dark palette, for gum (charmbracelet/gum — used by tmls
+# Same Gruvbox Dark palette, for gum (charmbracelet/gum 
 # below, and anything else reaching for it later). Namespaced GUM_TABLE_*
 # env vars only, not gum style's bare $FOREGROUND/$BORDER_FOREGROUND —
 # those are too generically named to export globally without risking
