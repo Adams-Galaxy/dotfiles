@@ -1,0 +1,2 @@
+# Matches nvim's gruvbox colorscheme (lua/plugins/theme.lua).
+--theme="gruvbox-dark"

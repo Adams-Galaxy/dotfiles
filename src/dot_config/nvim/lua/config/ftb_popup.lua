@@ -1,0 +1,127 @@
+-- RPC target for fzf-tab's nvim popup path (dot_config/zsh/env/fzf-tab.zsh).
+-- A shell inside a :terminal buffer calls back into the *parent* nvim
+-- process via `nvim --server $NVIM --remote-expr`. All the sizing math
+-- (candidate-list scanning, popup-min-size, above/below-cursor placement)
+-- happens on the zsh side, the same as the tmux pane fork — this module
+-- just executes whatever geometry it's given, plus the one query zsh
+-- can't do itself: where the terminal's cursor actually is on screen.
+local M = {}
+
+-- Returns "cursor_row cursor_col win_row win_col win_width win_height",
+-- all 0-indexed editor-relative — the same shape as the pane_top/cursor_y/
+-- pane_width/etc. tuple _ftb_popup_pane reads from `tmux display-message`.
+-- screenpos() (not just the window's own position) is what makes this
+-- track the live prompt line rather than the top-left of the window.
+function M.geometry()
+  local win = vim.api.nvim_get_current_win()
+  local cursor = vim.api.nvim_win_get_cursor(win)
+  local pos = vim.fn.screenpos(win, cursor[1], cursor[2] + 1)
+  local win_pos = vim.api.nvim_win_get_position(win)
+  return string.format(
+    "%d %d %d %d %d %d",
+    pos.row - 1,
+    pos.col - 1,
+    win_pos[1],
+    win_pos[2],
+    vim.api.nvim_win_get_width(win),
+    vim.api.nvim_win_get_height(win)
+  )
+end
+
+-- Opens a floating window at the given geometry, runs `script` in it as a
+-- real terminal job, and returns immediately — not once the job exits.
+-- Blocking here (e.g. vim.wait in a loop) runs *inside* the RPC request
+-- handler, and nvim defers the screen redraw that would show the new
+-- window until that handler returns, so the attached UI just sits there
+-- looking frozen. The caller instead blocks on `script`'s own output
+-- redirection (a fifo, so no polling on either side); this only needs to
+-- close the window again once the job exits.
+-- row/col/width/height describe the *outer*, border-inclusive footprint
+-- (matching tmux's -x/-y/-w/-h, which the zsh side's math mirrors) — but
+-- nvim_open_win's own row/col/width/height describe the *content* area
+-- only, with a rounded border drawn one cell further out on every side.
+-- width/height shrink by 2 to compensate; col shifts right by 1 the same
+-- way. row shifts up by 1 rather than down: the border sits one row
+-- *above* content, and the intended top edge is that border row, not one
+-- past it — confirmed against the actual rendered position, not just the
+-- symmetric version of the width/col fix.
+function M.open(row, col, width, height, script, cwd)
+  -- Same border colour as the tmux popup (popup-border-style in
+  -- .tmux.conf) and fzf's own --color=border (common.zsh) — set fresh on
+  -- every open rather than once at load time, so it survives a
+  -- colorscheme change without needing its own autocmd. Scoped to just
+  -- this window via winhighlight, not the global FloatBorder group, so it
+  -- doesn't reach into LSP hover/telescope/other floats.
+  vim.api.nvim_set_hl(0, "FtbPopupBorder", { fg = "#665c54", bg = "none" })
+
+  local buf = vim.api.nvim_create_buf(false, true)
+
+  -- vim-tmux-navigator's terminal-mode ctrl-h/j/k/l mappings (only active
+  -- when $TMUX is set, i.e. this nvim is itself inside tmux) check
+  -- `&filetype == 'fzf'` before deciding whether to pass the key through
+  -- or hijack it into a :TmuxNavigate* command — a convention fzf.vim's
+  -- own terminal wrapper sets for exactly this reason. Without it here,
+  -- ctrl-j/k/l never reach fzf inside this window at all; they get turned
+  -- into a :TmuxNavigateUp/Down/Right call instead, which then errors
+  -- ("not a recognised command") since that command only exists for a
+  -- normal vim window, not from inside this terminal job.
+  vim.bo[buf].filetype = "fzf"
+
+  local win = vim.api.nvim_open_win(buf, true, {
+    relative = "editor",
+    row = row - 1,
+    col = col + 1,
+    width = math.max(1, width - 2),
+    height = math.max(1, height - 2),
+    style = "minimal",
+    border = "rounded",
+  })
+  vim.api.nvim_set_option_value("winhighlight", "FloatBorder:FtbPopupBorder", { win = win })
+
+  -- Clicking outside the popup moves focus to whatever window is under the
+  -- cursor (normal nvim mouse behaviour) rather than being swallowed by it,
+  -- so there's nothing here to catch the click itself — only that focus
+  -- left. WinLeave on the terminal buffer fires exactly then. jobstop (not
+  -- just closing the window) is what makes it act "as if escaped": SIGTERM
+  -- closes fzf's stdout, the fifo read on the zsh side sees EOF and
+  -- unblocks with no selection, same as fzf's own escape binding — closing
+  -- the window without stopping the job would leave fzf running with
+  -- nowhere to render and the zsh side blocked on the fifo forever.
+  local job_id
+  local group = vim.api.nvim_create_augroup("FtbPopupClose" .. buf, { clear = true })
+  vim.api.nvim_create_autocmd("WinLeave", {
+    group = group,
+    buffer = buf,
+    once = true,
+    callback = function()
+      if job_id then
+        vim.fn.jobstop(job_id)
+      end
+    end,
+  })
+
+  -- jobstart's cwd defaults to *nvim's own* cwd, not the terminal shell's
+  -- $PWD — they only happen to match right after nvim starts. Once the
+  -- shell `cd`s anywhere, fzf-tab's preview commands (eza/bat/etc. run
+  -- against $realpath, itself relative to that shell) start resolving
+  -- against the wrong directory and every preview looks like a missing
+  -- file. zsh passes its own $PWD through explicitly to fix that.
+  job_id = vim.fn.jobstart({ "/bin/sh", script }, {
+    term = true,
+    cwd = cwd,
+    on_exit = function()
+      if vim.api.nvim_win_is_valid(win) then
+        vim.api.nvim_win_close(win, true)
+      end
+      if vim.api.nvim_buf_is_valid(buf) then
+        vim.api.nvim_buf_delete(buf, { force = true })
+      end
+    end,
+  })
+  vim.cmd("startinsert")
+end
+
+_G.__ftb_popup_geometry = M.geometry
+_G.__ftb_popup_open = M.open
+
+return M

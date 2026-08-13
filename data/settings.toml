@@ -1,0 +1,18 @@
+# Shared, mostly-constant settings - not packages, not the theme, just the
+# small facts a few modules need (git identity, etc). Read via
+# w.data.toml("data/settings.toml") and merged with the active profile's
+# overrides in modules/settings.lua.
+#
+# Add a [profiles.<name>.<section>] table only for the keys that profile
+# actually overrides - anything absent falls back to the section above.
+
+[git]
+full_name = "Adam Williams"
+email = "adam.g.williams.nz@gmail.com"
+
+[shell]
+github_username = "Adams-Galaxy"
+
+# Example:
+# [profiles.work.git]
+# email = "you@work-email.com"

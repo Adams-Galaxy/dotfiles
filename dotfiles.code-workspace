@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "wombat",
+			"path": "."
+		},
+		{
+			"name": "wombat-src",
+			"path": "../../../dev/wombat"
+		}
+	],
+	"settings": {}
+}

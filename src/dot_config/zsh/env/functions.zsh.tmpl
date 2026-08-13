@@ -1,0 +1,87 @@
+# Shared shell functions
+
+export GPIP_GITHUB_USER="{{github_username}}"
+
+# Yazi wrapper function
+y() {
+  local tmp
+  local cwd
+
+  if ! command -v yazi >/dev/null 2>&1; then
+    if [[ $# -gt 0 && -d "$1" ]]; then
+      builtin cd -- "$1"
+      return 0
+    fi
+
+    print "yazi is not installed"
+    return 127
+  fi
+
+  tmp="$(mktemp -t 'yazi-cwd.XXXXXX')"
+  command yazi "$@" --cwd-file="$tmp"
+  IFS= read -r -d '' cwd < "$tmp"
+  if [[ "$cwd" != "$PWD" && -d "$cwd" ]]; then
+    builtin cd -- "$cwd"
+  fi
+  rm -f -- "$tmp"
+}
+
+# Yazi wrapper function with sudo
+sy() {
+  local tmp
+  local cwd
+
+  if ! command -v yazi >/dev/null 2>&1; then
+    if [[ $# -gt 0 && -d "$1" ]]; then
+      builtin cd -- "$1"
+      return 0
+    fi
+
+    print "yazi is not installed"
+    return 127
+  fi
+
+  tmp="$(mktemp -t 'yazi-cwd.XXXXXX')"
+  sudo -E yazi "$@" --cwd-file="$tmp"
+  IFS= read -r -d '' cwd < "$tmp"
+  if [[ "$cwd" != "$PWD" && -d "$cwd" ]]; then
+    builtin cd -- "$cwd"
+  fi
+  rm -f -- "$tmp"
+}
+
+# Virtual environment creation and activation function
+venv() {
+  local dir="${1:-.}"
+  local venv_path="$dir/.venv"
+
+  if [[ ! -d "$venv_path" ]]; then
+    echo "Creating virtual environment in $venv_path"
+    python3 -m venv "$venv_path"
+  fi
+
+  source "$venv_path/bin/activate"
+}
+
+# Get enviroment variables
+envn() {
+  env | cut -d= -f1 | sort
+}
+
+# Get terminal width
+cols() {
+  tput cols
+}
+
+# Get terminal height
+rows() {
+  tput lines
+}
+
+# Get terminal size
+tsize() {
+  local cols rows
+  cols=$(tput cols)
+  rows=$(tput lines)
+  echo "${cols} ${rows}"
+}
