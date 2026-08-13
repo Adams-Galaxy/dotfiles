@@ -1,6 +1,0 @@
-#autoload
-
-local -a sessions
-sessions=(${(f)"$(tmux list-sessions -F '#S' 2>/dev/null)"})
-
-_describe 'tmux session' sessions
