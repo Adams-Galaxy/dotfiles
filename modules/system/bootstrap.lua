@@ -38,16 +38,19 @@ for name, pkg in pairs(packages) do
 end
 
 -- Debian repos don't package antidote at all - it was git-cloned directly
--- pre-migration too (see the old scripts/bootstrap.sh's install_antidote),
--- not something knobs/packages.toml's provider-resolved loop above can
--- express. A custom "git" provider (resolve/check/reconcile, real
--- check/bootstrap status) is a proven, tested mechanism in Wombat itself
--- and would be the natural upgrade if more git-sourced tools show up -
--- for this one case, a plain idempotent script is less ceremony for the
--- same result.
+-- pre-migration too (see the old scripts/bootstrap.sh's install_antidote).
+-- Wombat's built-in git provider now gives this real check/bootstrap
+-- status (a package.lua fallback was needed for this before it existed).
+-- provider is pinned explicitly: apt is also registered on Linux (see
+-- wombat.lua), and an unpinned package candidate with git-specific
+-- `with` options would hard-error there rather than gracefully skip.
 if w.target.os.name == "linux" then
-    w.script("install-antidote.sh", {}, {
-        at = "deploy.before",
-        schedule = "once",
+    w.need.package("antidote", {
+        provider = "git",
+        when = "deploy.before",
+        with = {
+            repository = "https://github.com/mattmc3/antidote.git",
+            to = w.host.home .. "/.antidote",
+        },
     })
 end

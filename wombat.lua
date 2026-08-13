@@ -27,7 +27,11 @@ local aliases = merged_aliases()
 if w.target.os.name == "macos" then
     w.providers({ { name = "brew", with = { aliases = aliases.brew or {} } } })
 else
-    w.providers({ { name = "apt", with = { update = true, aliases = aliases.apt or {} } } })
+    -- git is only needed for the antidote package.lua fallback below - not
+    -- registered on macOS, where nothing currently needs it (an unpinned
+    -- package candidate git can't resolve, e.g. one with no `with.repository`
+    -- at all, hard-errors rather than gracefully skipping).
+    w.providers({ { name = "apt", with = { update = true, aliases = aliases.apt or {} } }, "git" })
 end
 
 w.use("settings", { profile = input.profile })
