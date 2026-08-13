@@ -1,7 +1,7 @@
 local w = require("wombat")
 local profile = w.module.config().profile
 
-local packages = w.data.toml("data/packages.toml").package
+local packages = w.data.toml("knobs/packages.toml").packages
 
 local function os_matches(pkg)
     if pkg.os == nil then
@@ -27,12 +27,27 @@ local function profile_matches(pkg)
     return false
 end
 
-for _, pkg in ipairs(packages) do
+for name, pkg in pairs(packages) do
     if os_matches(pkg) and profile_matches(pkg) then
         if pkg.accept then
-            w.prefer.command(pkg.name, { accept = pkg.accept, when = "deploy.before" })
+            w.prefer.command(name, { accept = pkg.accept, when = "deploy.before" })
         else
-            w.need.command(pkg.name, { when = "deploy.before" })
+            w.need.command(name, { when = "deploy.before" })
         end
     end
+end
+
+-- Debian repos don't package antidote at all - it was git-cloned directly
+-- pre-migration too (see the old scripts/bootstrap.sh's install_antidote),
+-- not something knobs/packages.toml's provider-resolved loop above can
+-- express. A custom "git" provider (resolve/check/reconcile, real
+-- check/bootstrap status) is a proven, tested mechanism in Wombat itself
+-- and would be the natural upgrade if more git-sourced tools show up -
+-- for this one case, a plain idempotent script is less ceremony for the
+-- same result.
+if w.target.os.name == "linux" then
+    w.script("install-antidote.sh", {}, {
+        at = "deploy.before",
+        schedule = "once",
+    })
 end

@@ -1,0 +1,87 @@
+# Bootstrap package list. Loaded and declared by modules/system/bootstrap.lua
+# (one w.need.command() per entry) and read again at root, in wombat.lua,
+# to build the per-provider alias tables passed to w.providers() before
+# any requirement is declared.
+#
+# Each key is the COMMAND w.need.command() checks for - not necessarily
+# the package-manager name. Providers already know a few translations
+# (rg -> ripgrep, nvim -> neovim) themselves; anything else goes in
+# `alias` below.
+#
+#   os       Array of "macos"/"linux". Omit = both.
+#   profiles Array of profile names (see knobs/settings.toml). Omit = all.
+#   accept   Alternate command names also acceptable, tried in order if
+#            the preferred name can't be resolved - e.g. Debian's `fd`
+#            package publishes `fdfind`, not `fd`.
+#   alias    Per-provider, per-command-name package-name override, only
+#            where a provider's package name differs from the command
+#            being resolved. `alias.apt.fdfind = "fd-find"` means: when
+#            resolving the command "fdfind" on apt, install "fd-find".
+#
+# Known gaps, not expressed here yet:
+#   - ca-certificates (linux): not a command, needs w.need.package()
+#     against a real provider binding instead of this command-only loop.
+#   - antidote (linux): git-cloned by modules/system/bootstrap.lua's own
+#     w.script() call, not package-manager installed - see there. The
+#     [packages.antidote] entry below covers the macOS/Homebrew case only.
+
+[packages.git]
+
+[packages.curl]
+
+[packages.zsh]
+
+[packages.bash]
+os = ["linux"]
+
+[packages.starship]
+os = ["macos"]
+
+[packages.zoxide]
+
+[packages.atuin]
+
+[packages.direnv]
+
+[packages.just]
+
+[packages.eza]
+
+[packages.nvim]
+
+[packages.yazi]
+
+[packages.fastfetch]
+
+[packages.fzf]
+
+[packages.fd]
+accept = ["fdfind"]
+alias = { apt = { fdfind = "fd-find" } }
+
+[packages.rg]
+
+[packages.bat]
+
+[packages.gh]
+
+[packages.lazygit]
+
+[packages.lazydocker]
+
+[packages.btop]
+
+[packages.tmux]
+
+[packages.delta]
+alias = { brew = { delta = "git-delta" } }
+
+[packages.tree-sitter]
+
+[packages.tldr]
+alias = { brew = { tldr = "tealdeer" }, apt = { tldr = "tealdeer" } }
+
+[packages.antidote]
+os = ["macos"]
+
+[packages.gum]

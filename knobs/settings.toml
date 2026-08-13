@@ -1,6 +1,6 @@
 # Shared, mostly-constant settings - not packages, not the theme, just the
 # small facts a few modules need (git identity, etc). Read via
-# w.data.toml("data/settings.toml") and merged with the active profile's
+# w.data.toml("knobs/settings.toml") and merged with the active profile's
 # overrides in modules/settings.lua.
 #
 # Add a [profiles.<name>.<section>] table only for the keys that profile
