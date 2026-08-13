@@ -88,6 +88,25 @@ check_rendered_zsh() {
   rm -f "$tmp" /tmp/check_render_err
 }
 
+check_rendered_tmux() {
+  file="$1"
+  if ! have_command chezmoi || ! have_command tmux; then
+    skipped "$file" "chezmoi or tmux not installed"
+    return
+  fi
+  tmp="$(mktemp)"
+  sock="check-tmux-$$"
+  if chezmoi execute-template <"$file" >"$tmp" 2>/tmp/check_render_err \
+    && tmux -L "$sock" -f "$tmp" new-session -d 2>>/tmp/check_render_err; then
+    ok "$file (rendered)"
+  else
+    bad "$file (rendered)"
+    sed 's/^/        /' /tmp/check_render_err
+  fi
+  tmux -L "$sock" kill-server >/dev/null 2>&1
+  rm -f "$tmp" /tmp/check_render_err
+}
+
 check_rendered_toml() {
   file="$1"
   if ! have_command chezmoi || ! have_command python3; then
@@ -122,22 +141,28 @@ check_lua() {
 
 check_fastfetch() {
   file="$1"
-  if ! have_command fastfetch; then
-    skipped "$file" "fastfetch not installed"
+  if ! have_command fastfetch || ! have_command chezmoi; then
+    skipped "$file" "fastfetch or chezmoi not installed"
     return
   fi
+  # Rendered first since these are chezmoi templates (theme colors) now,
+  # not plain JSONC - fastfetch would otherwise choke on the literal
+  # {{ ... }} actions. Needs a .jsonc suffix - fastfetch -c refuses an
+  # extensionless path ("couldn't find config").
+  tmp="$(mktemp "${TMPDIR:-/tmp}/check-fastfetch-XXXXXX.jsonc")"
   # Runs the real parser rather than a generic JSON/JSONC linter, since
   # fastfetch's config is JSONC (comments) with its own module/format
   # schema a generic validator wouldn't catch mistakes in anyway —
   # --logo none/--pipe true keep this to a syntax+schema check, no ANSI
   # noise in the output either way.
-  if fastfetch -c "$file" --logo none --pipe true >/dev/null 2>/tmp/check_fastfetch_err; then
-    ok "$file"
+  if chezmoi execute-template <"$file" >"$tmp" 2>/tmp/check_fastfetch_err \
+    && fastfetch -c "$tmp" --logo none --pipe true >/dev/null 2>>/tmp/check_fastfetch_err; then
+    ok "$file (rendered)"
   else
-    bad "$file"
+    bad "$file (rendered)"
     sed 's/^/        /' /tmp/check_fastfetch_err
   fi
-  rm -f /tmp/check_fastfetch_err
+  rm -f "$tmp" /tmp/check_fastfetch_err
 }
 
 check_toml() {
@@ -200,6 +225,10 @@ done <"$file_list"
 [ -f dot_zshrc.tmpl ] && check_rendered_zsh dot_zshrc.tmpl
 
 echo
+echo "== templated tmux config (rendered, tmux -f) =="
+[ -f dot_tmux.conf.tmpl ] && check_rendered_tmux dot_tmux.conf.tmpl
+
+echo
 echo "== Lua files (luac -p) =="
 find dot_config/nvim dot_config/wezterm -type f -name "*.lua" -print | sort >"$file_list"
 while IFS= read -r f; do
@@ -208,8 +237,8 @@ done <"$file_list"
 
 echo
 echo "== fastfetch config =="
-[ -f dot_config/fastfetch/config.jsonc ] && check_fastfetch dot_config/fastfetch/config.jsonc
-[ -f dot_config/fastfetch/config-compact.jsonc ] && check_fastfetch dot_config/fastfetch/config-compact.jsonc
+[ -f dot_config/fastfetch/config.jsonc.tmpl ] && check_fastfetch dot_config/fastfetch/config.jsonc.tmpl
+[ -f dot_config/fastfetch/config-compact.jsonc.tmpl ] && check_fastfetch dot_config/fastfetch/config-compact.jsonc.tmpl
 
 echo
 echo "== TOML files =="

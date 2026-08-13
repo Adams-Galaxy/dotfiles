@@ -6,6 +6,7 @@ export DOTFILES="$HOME/.config/zsh"
 
 # Shared config
 source "$DOTFILES/env/common.zsh"
+source "$DOTFILES/env/tinty.zsh"
 source "$DOTFILES/env/aliases.zsh"
 source "$DOTFILES/env/path.zsh"
 source "$DOTFILES/env/completion.zsh"

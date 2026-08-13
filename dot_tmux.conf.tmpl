@@ -1,3 +1,18 @@
+{{- $theme := index .theming.themes .theme -}}
+{{- $c := $theme.palette -}}
+{{- $a := $theme.ansi16 -}}
+{{- $gray := "" -}}
+{{- $fg := "" -}}
+{{- $brown := "" -}}
+{{- if eq $theme.system "tinted8" -}}
+  {{- $gray = index $c "gray-dim" -}}
+  {{- $fg = index $c "white-normal" -}}
+  {{- $brown = index $c "orange-normal" -}}
+{{- else -}}
+  {{- $gray = $c.base03 -}}
+  {{- $fg = $c.base06 -}}
+  {{- $brown = $c.base0F -}}
+{{- end -}}
 ##### TMUX Configuration File ####################################
 set-option -sa terminal-overrides ",xterm*:Tc"
 
@@ -196,9 +211,11 @@ set -g display-panes-time 1500
 # fzf still get a frame.
 set -g popup-border-lines rounded
 
-# Match fzf's own border colour (--color=border:#665c54 in common.zsh) so a
-# tmux-drawn frame is indistinguishable from an fzf-drawn one.
-set -g popup-border-style 'fg=#665c54'
+# Roughly matches fzf's own border colour (tinted-fzf, sourced by
+# common.zsh, picks its own dim-gray from whatever's active) so a
+# tmux-drawn frame reads as the same kind of border, though not
+# necessarily byte-identical under tinted8 - see the $gray branch above.
+set -g popup-border-style 'fg={{ $gray }}'
 
 # Inherit the terminal background rather than painting a solid panel, to
 # match the transparent status bar.
@@ -251,10 +268,10 @@ set -g @plugin 'tmux-plugins/tmux-prefix-highlight'
 
 set -g @prefix_highlight_show_copy_mode 'on'
 set -g @prefix_highlight_show_sync_mode 'on'
-set -g @prefix_highlight_fg '#ebdbb2'
-set -g @prefix_highlight_bg '#d65d0e'
-set -g @prefix_highlight_copy_mode_attr 'fg=#fabd2f,bg=#d65d0e,bold'
-set -g @prefix_highlight_sync_mode_attr 'fg=#b8bb26,bg=#d65d0e,bold'
+set -g @prefix_highlight_fg '{{ $fg }}'
+set -g @prefix_highlight_bg '{{ $brown }}'
+set -g @prefix_highlight_copy_mode_attr 'fg={{ index $a 11 }},bg={{ $brown }},bold'
+set -g @prefix_highlight_sync_mode_attr 'fg={{ index $a 10 }},bg={{ $brown }},bold'
 set -g @prefix_highlight_output_prefix ' '
 set -g @prefix_highlight_output_suffix ' '
 

@@ -4,6 +4,8 @@
 # fzf-tab drives selection itself, so zsh's own menu must be off.
 zstyle ':completion:*' menu no
 
+zstyle ':completion:*' group-order arguments options files directories
+
 # Group header format ("[file]", "[directory]", ...) — fzf-tab parses
 # these to build its groups.
 zstyle ':completion:*:descriptions' format '[%d]'

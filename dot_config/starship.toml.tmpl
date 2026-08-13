@@ -1,3 +1,21 @@
+{{- $theme := index .theming.themes .theme -}}
+{{- $c := $theme.palette -}}
+{{- $a := $theme.ansi16 -}}
+{{- $fg := "" -}}
+{{- $whiteBright := "" -}}
+{{- $orange := "" -}}
+{{- $orangeBright := "" -}}
+{{- if eq $theme.system "tinted8" -}}
+  {{- $fg = index $c "white-normal" -}}
+  {{- $whiteBright = index $c "white-bright" -}}
+  {{- $orange = index $c "orange-normal" -}}
+  {{- $orangeBright = index $c "orange-bright" -}}
+{{- else -}}
+  {{- $fg = $c.base06 -}}
+  {{- $whiteBright = $c.base07 -}}
+  {{- $orange = $c.base0F -}}
+  {{- $orangeBright = $c.base09 -}}
+{{- end -}}
 format = """
 [](color_orange)\
 $os\
@@ -29,26 +47,42 @@ $line_break$character"""
 
 palette = 'gruvbox_dark'
 
+# The 6 hue pairs below (blue/aqua/green/purple/red/yellow, plain and
+# "_bright") come from .theming.themes' derived `ansi16` (see
+# scripts/tinty-sync.sh's compute_ansi16), same as wezterm's ansi/brights
+# rows - system-agnostic, no per-system branching needed here for those.
+# fg0/white_bright/orange/orange_bright DO need a branch above (tinted8
+# uses named "white-normal" etc. keys instead of base06/07/0F/09), since
+# orange/brown aren't part of the standard 8-hue ANSI set ansi16 covers.
+#
+# bg1/bg3/black_bright have no equivalent in EVERY system though: base16
+# and base24 share an 8-step base00-07 grayscale ramp, but tinted8 only
+# has 6 grayscale tones total (black/gray x normal/bright/dim) with no
+# consistent match for base16's specific base01/base03 mid-tones - so
+# unlike everything else in this file, these three stay hardcoded to
+# base16's own values regardless of which system is active. Fine-grained
+# UI chrome shades, not a color anyone's likely to miss noticing stayed
+# put across a scheme switch.
 [palettes.gruvbox_dark]
-color_fg0 = '#ebdbb2'
-color_white_bright = '#fbf1c7'
+color_fg0 = '{{ $fg }}'
+color_white_bright = '{{ $whiteBright }}'
 color_bg1 = '#3c3836'
 color_bg3 = '#665c54'
 color_black_bright = '#7c6f64'
-color_blue = '#458588'
-color_blue_bright = '#83a598'
-color_aqua = '#689d6a'
-color_aqua_bright = '#8ec07c'
-color_green = '#98971a'
-color_green_bright = '#b8bb26'
-color_orange = '#d65d0e'
-color_orange_bright = '#fe8019'
-color_purple = '#b16286'
-color_purple_bright = '#d3869b'
-color_red = '#cc241d'
-color_red_bright = '#fb4934'
-color_yellow = '#d79921'
-color_yellow_bright = '#fabd2f'
+color_blue = '{{ index $a 4 }}'
+color_blue_bright = '{{ index $a 12 }}'
+color_aqua = '{{ index $a 6 }}'
+color_aqua_bright = '{{ index $a 14 }}'
+color_green = '{{ index $a 2 }}'
+color_green_bright = '{{ index $a 10 }}'
+color_orange = '{{ $orange }}'
+color_orange_bright = '{{ $orangeBright }}'
+color_purple = '{{ index $a 5 }}'
+color_purple_bright = '{{ index $a 13 }}'
+color_red = '{{ index $a 1 }}'
+color_red_bright = '{{ index $a 9 }}'
+color_yellow = '{{ index $a 3 }}'
+color_yellow_bright = '{{ index $a 11 }}'
 
 [os]
 disabled = false

@@ -133,3 +133,6 @@ alias z="cd"
 # Fastfetch alias
 alias ff="splash"
 alias cff="clear && splash"
+
+# Burrow
+alias b="burrow"

@@ -20,3 +20,12 @@ fi
 if (( ${+commands[direnv]} )); then
   cache_init direnv direnv hook zsh
 fi
+
+if (( ${+commands[burrow]} )); then
+  cache_init burrow burrow init zsh
+fi
+
+# Completions
+if (( ${+commands[wombat]} )); then
+  cache_init wombat completions zsh
+fi

@@ -8,3 +8,6 @@ local/
 *.swp
 *.tmp
 *.log
+
+.claude/
+.chezmoidata/
