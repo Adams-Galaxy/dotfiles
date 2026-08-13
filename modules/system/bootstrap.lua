@@ -1,13 +1,15 @@
 local w = require("wombat")
 local profile = w.module.config().profile
 
-local packages = w.data.toml("knobs/packages.toml").packages
+local data = w.data.toml("knobs/packages.toml")
+local commands = data.command or {}
+local pkgs = data.package or {}
 
-local function os_matches(pkg)
-    if pkg.os == nil then
+local function os_matches(entry)
+    if entry.os == nil then
         return true
     end
-    for _, name in ipairs(pkg.os) do
+    for _, name in ipairs(entry.os) do
         if name == w.target.os.name then
             return true
         end
@@ -15,11 +17,11 @@ local function os_matches(pkg)
     return false
 end
 
-local function profile_matches(pkg)
-    if pkg.profiles == nil then
+local function profile_matches(entry)
+    if entry.profiles == nil then
         return true
     end
-    for _, name in ipairs(pkg.profiles) do
+    for _, name in ipairs(entry.profiles) do
         if name == profile then
             return true
         end
@@ -27,30 +29,38 @@ local function profile_matches(pkg)
     return false
 end
 
-for name, pkg in pairs(packages) do
-    if os_matches(pkg) and profile_matches(pkg) then
-        if pkg.accept then
-            w.prefer.command(name, { accept = pkg.accept, when = "deploy.before" })
+for name, cmd in pairs(commands) do
+    if os_matches(cmd) and profile_matches(cmd) then
+        if cmd.accept then
+            w.prefer.command(name, { accept = cmd.accept, when = "deploy.before" })
         else
             w.need.command(name, { when = "deploy.before" })
         end
     end
 end
 
--- antidote doesn't fit the command loop above on either platform - not a
--- knobs/packages.toml row at all, handled explicitly per target instead.
+for name, pkg in pairs(pkgs) do
+    if os_matches(pkg) and profile_matches(pkg) then
+        w.need.package(name, {
+            provider = pkg.provider,
+            with = pkg.with,
+            when = "deploy.before",
+        })
+    end
+end
+
+-- antidote doesn't fit knobs/packages.toml's [package.*] shape - its
+-- provider AND `with` differ per platform, and the Linux `with.to`
+-- needs w.host.home, which a static TOML table can't express.
 if w.target.os.name == "macos" then
     -- Confirmed via `brew list antidote`: the formula ships only
     -- share/antidote/antidote.zsh and a functions/ dir, no bin/ at all -
-    -- there is no command to check, ever, on this platform. w.need.command
-    -- reported it "missing" against a real, correctly-installed package.
+    -- there is no command to check, ever, on this platform.
     w.need.package("antidote", { provider = "brew", when = "deploy.before" })
 else
     -- Debian repos don't package antidote at all - it was git-cloned
-    -- directly pre-migration too (see the old scripts/bootstrap.sh's
-    -- install_antidote). Wombat's built-in git provider gives this real
-    -- check/bootstrap status. provider is pinned explicitly: apt is also
-    -- registered on Linux (see wombat.lua), and an unpinned package
+    -- directly pre-migration too. Provider is pinned explicitly: apt is
+    -- also registered on Linux (see wombat.lua), and an unpinned package
     -- candidate with git-specific `with` options would hard-error there
     -- rather than gracefully skip.
     w.need.package("antidote", {

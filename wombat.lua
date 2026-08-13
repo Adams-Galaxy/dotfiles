@@ -5,18 +5,18 @@ local input = w.inputs({
 })
 
 -- Provider package-name aliases are root-only config, folded once here
--- from every package entry's `alias` table (see knobs/packages.toml) -
+-- from every [command.*] entry's `alias` table (see knobs/packages.toml) -
 -- modules/bootstrap.lua only declares needs, it never touches providers.
-local packages = w.data.toml("knobs/packages.toml").packages
+-- [package.*] entries name their provider package directly and need no
+-- alias translation.
+local commands = w.data.toml("knobs/packages.toml").command or {}
 
 local function merged_aliases()
     local aliases = {}
-    for _, pkg in pairs(packages) do
-        for provider, names in pairs(pkg.alias or {}) do
+    for name, cmd in pairs(commands) do
+        for provider, package_name in pairs(cmd.alias or {}) do
             aliases[provider] = aliases[provider] or {}
-            for command, package_name in pairs(names) do
-                aliases[provider][command] = package_name
-            end
+            aliases[provider][name] = package_name
         end
     end
     return aliases

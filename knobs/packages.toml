@@ -1,87 +1,102 @@
-# Bootstrap package list. Loaded and declared by modules/system/bootstrap.lua
-# (one w.need.command() per entry) and read again at root, in wombat.lua,
-# to build the per-provider alias tables passed to w.providers() before
-# any requirement is declared.
+# Bootstrap package list. Loaded by modules/system/bootstrap.lua (one
+# w.need per entry) and read again at root, in wombat.lua, to build the
+# per-provider alias tables passed to w.providers() before any
+# requirement is declared.
 #
-# Each key is the COMMAND w.need.command() checks for - not necessarily
-# the package-manager name. Providers already know a few translations
-# (rg -> ripgrep, nvim -> neovim) themselves; anything else goes in
-# `alias` below.
+# Two shapes, matching Wombat's two requirement kinds:
 #
-#   os       Array of "macos"/"linux". Omit = both.
-#   profiles Array of profile names (see knobs/settings.toml). Omit = all.
-#   accept   Alternate command names also acceptable, tried in order if
-#            the preferred name can't be resolved - e.g. Debian's `fd`
-#            package publishes `fdfind`, not `fd`.
-#   alias    Per-provider, per-command-name package-name override, only
-#            where a provider's package name differs from the command
-#            being resolved. `alias.apt.fdfind = "fd-find"` means: when
-#            resolving the command "fdfind" on apt, install "fd-find".
+#   [command.<name>]  Checked by command name on PATH first, falling
+#                      back to a provider package query. Use this when
+#                      the thing you actually care about is a binary
+#                      being runnable (rg, fd, nvim, ...).
 #
-# Known gaps, not expressed here yet:
-#   - ca-certificates (linux): not a command, needs w.need.package()
-#     against a real provider binding instead of this command-only loop.
-#   - antidote: not a row here at all - w.need.command() wrongly reported
-#     it "missing" against a correctly installed macOS/Homebrew package
-#     (the formula ships no bin/ at all, nothing to check by command).
-#     Both platforms are handled explicitly in modules/system/bootstrap.lua
-#     instead - w.need.package(provider="brew") on macOS, git-cloned via
-#     the built-in git provider on Linux.
+#     accept   Alternate command names also acceptable, tried in order
+#              if the preferred name can't be resolved - e.g. Debian's
+#              `fd` package publishes `fdfind`, not `fd`.
+#     alias    Per-provider package-name override, only where a
+#              provider's package name differs from the command name -
+#              e.g. `alias.apt = "fd-find"` means: on apt, install
+#              "fd-find" to satisfy the command "fd".
+#
+#   [package.<name>]  Checked purely against a provider's package
+#                      database - no PATH check at all. Use this for
+#                      anything with no associated binary (Debian's
+#                      build-essential, ca-certificates, ...), where a
+#                      command check would wrongly report "missing"
+#                      against a correctly installed package.
+#
+#     provider  Pin to one provider by name. Optional - omit to
+#               auto-try every configured provider, same as command.
+#     with      Provider-specific data, passed straight through.
+#
+# Both shapes share:
+#   os        Array of "macos"/"linux". Omit = both.
+#   profiles  Array of profile names (see knobs/settings.toml). Omit = all.
+#
+# Known gap, not expressed here:
+#   - antidote: needs a different provider *and* a dynamic `with.to`
+#     (w.host.home) per platform, which a static TOML table can't
+#     express cleanly. Handled explicitly in modules/system/bootstrap.lua
+#     instead, right after this file is loaded.
 
-[packages.git]
+[command.git]
 
-[packages.curl]
+[command.curl]
 
-[packages.zsh]
+[command.zsh]
 
-[packages.bash]
+[command.bash]
 os = ["linux"]
 
-[packages.starship]
+[command.starship]
 os = ["macos"]
 
-[packages.zoxide]
+[command.zoxide]
 
-[packages.atuin]
+[command.atuin]
 
-[packages.direnv]
+[command.direnv]
 
-[packages.just]
+[command.just]
 
-[packages.eza]
+[command.eza]
 
-[packages.nvim]
+[command.nvim]
 
-[packages.yazi]
+[command.yazi]
 
-[packages.fastfetch]
+[command.fastfetch]
 
-[packages.fzf]
+[command.fzf]
 
-[packages.fd]
+[command.fd]
 accept = ["fdfind"]
-alias = { apt = { fdfind = "fd-find" } }
+alias = { apt = "fd-find" }
 
-[packages.rg]
+[command.rg]
 
-[packages.bat]
+[command.bat]
 
-[packages.gh]
+[command.gh]
 
-[packages.lazygit]
+[command.lazygit]
 
-[packages.lazydocker]
+[command.lazydocker]
 
-[packages.btop]
+[command.btop]
 
-[packages.tmux]
+[command.tmux]
 
-[packages.delta]
-alias = { brew = { delta = "git-delta" } }
+[command.delta]
+alias = { brew = "git-delta" }
 
-[packages.tree-sitter]
+[command.tree-sitter]
 
-[packages.tldr]
-alias = { brew = { tldr = "tealdeer" }, apt = { tldr = "tealdeer" } }
+[command.tldr]
+alias = { brew = "tealdeer", apt = "tealdeer" }
 
-[packages.gum]
+[command.gum]
+
+[package.ca-certificates]
+os = ["linux"]
+provider = "apt"
