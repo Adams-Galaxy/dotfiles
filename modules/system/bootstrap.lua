@@ -37,13 +37,6 @@ for name, pkg in pairs(packages) do
     end
 end
 
--- Debian repos don't package antidote at all - it was git-cloned directly
--- pre-migration too (see the old scripts/bootstrap.sh's install_antidote).
--- Wombat's built-in git provider now gives this real check/bootstrap
--- status (a package.lua fallback was needed for this before it existed).
--- provider is pinned explicitly: apt is also registered on Linux (see
--- wombat.lua), and an unpinned package candidate with git-specific
--- `with` options would hard-error there rather than gracefully skip.
 if w.target.os.name == "linux" then
     w.need.package("antidote", {
         provider = "git",

@@ -27,5 +27,5 @@ fi
 
 # Completions
 if (( ${+commands[wombat]} )); then
-  cache_init wombat completions zsh
+  cache_init wombat wombat completions zsh
 fi
