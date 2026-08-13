@@ -21,9 +21,12 @@
 # Known gaps, not expressed here yet:
 #   - ca-certificates (linux): not a command, needs w.need.package()
 #     against a real provider binding instead of this command-only loop.
-#   - antidote (linux): git-cloned by modules/system/bootstrap.lua's own
-#     w.script() call, not package-manager installed - see there. The
-#     [packages.antidote] entry below covers the macOS/Homebrew case only.
+#   - antidote: not a row here at all - w.need.command() wrongly reported
+#     it "missing" against a correctly installed macOS/Homebrew package
+#     (the formula ships no bin/ at all, nothing to check by command).
+#     Both platforms are handled explicitly in modules/system/bootstrap.lua
+#     instead - w.need.package(provider="brew") on macOS, git-cloned via
+#     the built-in git provider on Linux.
 
 [packages.git]
 
@@ -80,8 +83,5 @@ alias = { brew = { delta = "git-delta" } }
 
 [packages.tldr]
 alias = { brew = { tldr = "tealdeer" }, apt = { tldr = "tealdeer" } }
-
-[packages.antidote]
-os = ["macos"]
 
 [packages.gum]
