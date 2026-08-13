@@ -6,7 +6,6 @@ export DOTFILES="$HOME/.config/zsh"
 
 # Shared config
 source "$DOTFILES/env/common.zsh"
-source "$DOTFILES/env/tinty.zsh"
 source "$DOTFILES/env/aliases.zsh"
 source "$DOTFILES/env/path.zsh"
 source "$DOTFILES/env/completion.zsh"
@@ -14,10 +13,10 @@ source "$DOTFILES/env/functions.zsh"
 source "$DOTFILES/env/fzf.zsh"
 source "$DOTFILES/env/fzf-git.zsh"
 source "$DOTFILES/env/dotpkg.zsh"
-source "$DOTFILES/env/chezmoi.zsh"
+source "$DOTFILES/env/dotfiles-nav.zsh"
 source "$DOTFILES/env/tmux.zsh"
 
-# Per-project shell environments (~/dev/burrow), not chezmoi-managed
+# Per-project shell environments (~/dev/burrow), not managed by this repo
 if [[ -f "$HOME/dev/burrow/burrow.plugin.zsh" ]]; then
   source "$HOME/dev/burrow/burrow.plugin.zsh"
 fi

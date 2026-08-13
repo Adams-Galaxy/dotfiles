@@ -1,4 +1,4 @@
-# Dotfiles (chezmoi) workflow helpers
+# Dotfiles workflow helpers
 
 # Open the dotfiles source directory in yazi, for browsing/file-ops
 dotfiles() {
@@ -32,26 +32,5 @@ dfe() {
   )" || return
 
   "${EDITOR:-nvim}" "$file"
-}
-
-# Show what chezmoi would change on the next apply
-dotdiff() {
-  chezmoi diff "$@"
-}
-
-# Show managed/unmanaged file status
-dotstatus() {
-  chezmoi status "$@"
-}
-
-# Apply chezmoi changes, then reload the current shell (and tmux, if running)
-dotapply() {
-  chezmoi apply "$@" || return 1
-
-  source "$HOME/.zshrc"
-
-  if [[ -n "$TMUX" ]]; then
-    tmux source-file "$HOME/.tmux.conf" >/dev/null 2>&1
-  fi
 }
 

@@ -1,11 +1,3 @@
-{{- $theme := index .theming.themes .theme -}}
-{{- $c := $theme.palette -}}
-{{- $orange := "" -}}
-{{- if eq $theme.system "tinted8" -}}
-  {{- $orange = index $c "orange-bright" -}}
-{{- else -}}
-  {{- $orange = $c.base09 -}}
-{{- end -}}
 {
   "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/master/doc/json_schema.json",
   "logo": {
@@ -17,14 +9,13 @@
   },
   // Named ANSI colors, not hex — these resolve through the terminal's own
   // palette (WezTerm's `brights` table in config/appearance.lua is already
-  // gruvbox), same as fzf/nvim, so there's one source of truth for the
-  // theme instead of a second hardcoded copy here. Only backs title/
-  // separator now — every boxed module below sets its own keyColor,
-  // walking orange -> yellow -> cyan -> blue down the four sections.
-  // Orange is the one exception: it's not in fastfetch's named-color set
-  // (only the 8 base ANSI names resolve through the terminal palette), so
-  // it's templated from .theming.themes instead (base09, or tinted8's
-  // orange-bright), on each Hardware-section module below.
+  // gruvbox), so there's one source of truth for the theme instead of a
+  // second hardcoded copy here. Only backs title/separator now — every
+  // boxed module below sets its own keyColor, walking orange -> yellow ->
+  // cyan -> blue down the four sections. Orange is the one exception: it's
+  // not in fastfetch's named-color set (only the 8 base ANSI names resolve
+  // through the terminal palette), so it's hand-set hex on each
+  // Hardware-section module below rather than a named color.
   "display": {
     // Truncation (see the `:-N` format modifiers below) already keeps
     // known-variable fields short; this is the backstop for anything
@@ -41,7 +32,7 @@
     "separator",
 
     { "type": "custom", "format": "\u001b[90m╭──────────────────────Hardware──────────────────────╮" },
-    { "type": "host", "key": "󰌢  PC", "keyColor": "{{ $orange }}" },
+    { "type": "host", "key": "󰌢  PC", "keyColor": "#fe8019" },
     // fastfetch's own format syntax supports truncation:
     // `{placeholder:-N}` caps a field at N chars and appends "…" if it
     // was cut — real truncation, not the linewrap-suppression
@@ -50,12 +41,12 @@
     // being cut). Applied here to `name`, the one variable-length field
     // in each of these — cores/frequency are always a couple of short
     // digits, no realistic overflow risk to guard there.
-    { "type": "cpu", "key": "│ ├󰻠 ", "keyColor": "{{ $orange }}", "format": "{name:-32} ({core-types}) @ {freq-max}" },
-    { "type": "gpu", "key": "│ ├󰍹 ", "keyColor": "{{ $orange }}", "format": "{name:-32} ({core-count}) @ {frequency} [{type}]" },
-    { "type": "memory", "key": "│ ├󰑭 ", "keyColor": "{{ $orange }}" },
+    { "type": "cpu", "key": "│ ├󰻠 ", "keyColor": "#fe8019", "format": "{name:-32} ({core-types}) @ {freq-max}" },
+    { "type": "gpu", "key": "│ ├󰍹 ", "keyColor": "#fe8019", "format": "{name:-32} ({core-count}) @ {frequency} [{type}]" },
+    { "type": "memory", "key": "│ ├󰑭 ", "keyColor": "#fe8019" },
     // {size-percentage} already includes its own "%" — a literal one
     // after it doubles up ("69%%"), so there isn't one here.
-    { "type": "disk", "key": "└ └󰋊 ", "keyColor": "{{ $orange }}", "format": "{size-used} / {size-total} ({size-percentage})" },
+    { "type": "disk", "key": "└ └󰋊 ", "keyColor": "#fe8019", "format": "{size-used} / {size-total} ({size-percentage})" },
     { "type": "custom", "format": "\u001b[90m╰────────────────────────────────────────────────────╯" },
     "break",
 

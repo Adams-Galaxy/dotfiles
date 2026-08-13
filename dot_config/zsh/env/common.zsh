@@ -32,24 +32,7 @@ cache_init() {
   source "$cache"
 }
 
-{{ $theme := index .theming.themes .theme -}}
-{{ $c := $theme.palette -}}
-{{ $a := $theme.ansi16 -}}
-{{ $gray := "" -}}
-{{ $fg := "" -}}
-{{ if eq $theme.system "tinted8" -}}
-  {{ $gray = index $c "gray-dim" -}}
-  {{ $fg = index $c "white-normal" -}}
-{{ else -}}
-  {{ $gray = $c.base03 -}}
-  {{ $fg = $c.base06 -}}
-{{ end -}}
-# Hand-tuned, not tinty-managed - deliberately not templated from
-# .theming.themes. Kept exactly as it was pre-migration: tinted-fzf's own
-# tinted8 template emits invalid empty-hex color specs (border:#,
-# prompt:#, ...) that make fzf refuse to start, and this scheme was
-# preferred to stay fixed regardless of whichever theme is active
-# elsewhere.
+# Hand-tuned, static gruvbox-dark-hard colors.
 export FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS:---height 40% --layout=reverse --border \
 --color=fg:#ebdbb2,fg+:#fbf1c7,bg+:#3c3836 \
 --color=hl:#83a598,hl+:#fe8019 \
@@ -59,14 +42,11 @@ export FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS:---height 40% --layout=reverse --bor
 --color=border:#665c54,label:#ebdbb2}"
 
 # Same theme, for gum (charmbracelet/gum below, and anything else
-# reaching for it later) - no official tinted-theming template for gum
-# exists, so this is templated straight from .chezmoidata/theming.yaml
-# instead of sourcing a generated file like fzf does. Namespaced
-# GUM_TABLE_* env vars only, not gum style's bare
+# reaching for it later). Namespaced GUM_TABLE_* env vars only, not gum style's bare
 # $FOREGROUND/$BORDER_FOREGROUND — those are too generically named to
 # export globally without risking collisions with something else
 # expecting them unscoped.
 export GUM_TABLE_BORDER="rounded"
-export GUM_TABLE_BORDER_FOREGROUND="{{ $gray }}"
-export GUM_TABLE_HEADER_FOREGROUND="{{ index $a 12 }}"
-export GUM_TABLE_CELL_FOREGROUND="{{ $fg }}"
+export GUM_TABLE_BORDER_FOREGROUND="#453e38"
+export GUM_TABLE_HEADER_FOREGROUND="#83a598"
+export GUM_TABLE_CELL_FOREGROUND="#ebdbb2"

@@ -123,10 +123,6 @@ alias gsw="git switch"
 alias zr="source ~/.zshrc"
 alias zrst="clear && printf '\e[3J' && exec zsh -l"
 
-# Dotfiles (chezmoi) workflow helpers
-alias cr="dotapply"
-alias crr="dotapply && zrst"
-
 # Because zoxide --cmd is set to "cd", so we preserve "z" for still function as default z
 alias z="cd"
 

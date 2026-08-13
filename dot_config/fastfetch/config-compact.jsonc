@@ -1,11 +1,3 @@
-{{- $theme := index .theming.themes .theme -}}
-{{- $c := $theme.palette -}}
-{{- $orange := "" -}}
-{{- if eq $theme.system "tinted8" -}}
-  {{- $orange = index $c "orange-bright" -}}
-{{- else -}}
-  {{- $orange = $c.base09 -}}
-{{- end -}}
 {
   "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/master/doc/json_schema.json",
   // Compact bracket: same modules and format overrides as config.jsonc,
@@ -19,8 +11,7 @@
   // -> cyan/Desktop -> blue/Extras progression as config.jsonc's section
   // borders, just without the borders themselves to mark the boundaries.
   // Orange isn't in the named ANSI set fastfetch resolves through the
-  // terminal palette (unlike the other three) — templated from
-  // .theming.themes instead (base09, or tinted8's orange-bright) here as
+  // terminal palette (unlike the other three) — hand-set hex here as
   // the one exception.
   "logo": {
     "type": "file-raw",
@@ -42,12 +33,12 @@
 
     { "type": "custom", "format": "\u001b[90m╭─────────────────────System─────────────────────╮" },
 
-    { "type": "host", "key": "󰌢 ", "keyColor": "{{ $orange }}" },
-    { "type": "cpu", "key": "│ ├󰻠 ", "keyColor": "{{ $orange }}", "format": "{name:-32} ({core-types}) @ {freq-max}" },
-    { "type": "gpu", "key": "│ ├󰍹 ", "keyColor": "{{ $orange }}", "format": "{name:-32} ({core-count}) @ {frequency} [{type}]" },
-    { "type": "memory", "key": "│ ├󰑭 ", "keyColor": "{{ $orange }}" },
-    { "type": "swap", "key": "│ ├󰓡 ", "keyColor": "{{ $orange }}" },
-    { "type": "disk", "key": "│ ├󰋊 ", "keyColor": "{{ $orange }}", "format": "{size-used} / {size-total} ({size-percentage})" },
+    { "type": "host", "key": "󰌢 ", "keyColor": "#fe8019" },
+    { "type": "cpu", "key": "│ ├󰻠 ", "keyColor": "#fe8019", "format": "{name:-32} ({core-types}) @ {freq-max}" },
+    { "type": "gpu", "key": "│ ├󰍹 ", "keyColor": "#fe8019", "format": "{name:-32} ({core-count}) @ {frequency} [{type}]" },
+    { "type": "memory", "key": "│ ├󰑭 ", "keyColor": "#fe8019" },
+    { "type": "swap", "key": "│ ├󰓡 ", "keyColor": "#fe8019" },
+    { "type": "disk", "key": "│ ├󰋊 ", "keyColor": "#fe8019", "format": "{size-used} / {size-total} ({size-percentage})" },
 
     { "type": "os", "key": "│ ├ ", "keyColor": "yellow" },
     { "type": "kernel", "key": "│ ├󰌽 ", "keyColor": "yellow" },

@@ -1,7 +1,2 @@
-# "tinted-scheme" isn't a real theme name - it's the fixed destination
-# tinty's tinted-yazi hook copies the active theme's flavor.toml into
-# (dot_config/tinted-theming/tinty/config.toml.tmpl), overwritten on every
-# `tinty apply`. The flavor's actual name never needs to change here, only
-# its content does.
 [flavor]
-dark = "tinted-scheme"
+dark = "gruvbox-dark-hard"

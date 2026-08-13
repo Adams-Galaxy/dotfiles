@@ -1,15 +1,3 @@
-{{- $theme := index .theming.themes .theme -}}
-{{- $c := $theme.palette -}}
-{{- $a := $theme.ansi16 -}}
-{{- $fg := "" -}}
-{{- $bg := "" -}}
-{{- if eq $theme.system "tinted8" -}}
-  {{- $fg = index $c "white-normal" -}}
-  {{- $bg = index $c "black-dim" -}}
-{{- else -}}
-  {{- $fg = $c.base06 -}}
-  {{- $bg = $c.base00 -}}
-{{- end -}}
 -- Colors, font, and window chrome — pulled from the exported iTerm2
 -- profile/colors in ~/Downloads (iterm-colors.itermcolors, Default.json)
 -- for as close to a 1:1 visual match as WezTerm's model allows. The
@@ -21,41 +9,36 @@
 local wezterm = require("wezterm")
 
 local colors = {
-  foreground = "{{ $fg }}",
-  background = "{{ $bg }}",
-  cursor_bg = "{{ $fg }}",
-  cursor_fg = "{{ $bg }}",
-  cursor_border = "{{ $fg }}",
-  selection_fg = "{{ $bg }}",
-  selection_bg = "{{ $fg }}",
-  -- Both rows come from .theming.themes' derived `ansi16` (see
-  -- scripts/tinty-sync.sh's compute_ansi16) rather than base00-0F/hue
-  -- keys directly, so this works the same regardless of which system is
-  -- active. base16 only defines ONE slot per hue (bright reuses the same
-  -- value as normal, per the spec's own ANSI mapping table) so `ansi`
-  -- and `brights` come out identical there - an honest reflection of
-  -- base16's real limit, not a bug. base24 and tinted8 both define
-  -- genuinely distinct bright variants, so those come out richer
-  -- automatically with no template changes needed to get that.
+  foreground = "#ebdbb2",
+  background = "#1d2021",
+  cursor_bg = "#ebdbb2",
+  cursor_fg = "#1d2021",
+  cursor_border = "#ebdbb2",
+  selection_fg = "#1d2021",
+  selection_bg = "#ebdbb2",
+  -- Static gruvbox-dark-hard palette, hand-set. Was templated from a
+  -- shared theme system (chezmoi + tinted-theming); that framework is
+  -- being removed as part of the Wombat migration, so these values are
+  -- hand-set until a replacement theming design lands.
   ansi = {
-    "{{ index $a 0 }}", -- black
-    "{{ index $a 1 }}", -- red
-    "{{ index $a 2 }}", -- green
-    "{{ index $a 3 }}", -- yellow
-    "{{ index $a 4 }}", -- blue
-    "{{ index $a 5 }}", -- purple
-    "{{ index $a 6 }}", -- aqua
-    "{{ index $a 7 }}", -- white
+    "#1d2021", -- black
+    "#fb4934", -- red
+    "#b8bb26", -- green
+    "#fabd2f", -- yellow
+    "#83a598", -- blue
+    "#d3869b", -- purple
+    "#8ec07c", -- aqua
+    "#ebdbb2", -- white
   },
   brights = {
-    "{{ index $a 8 }}", -- bright black
-    "{{ index $a 9 }}", -- bright red
-    "{{ index $a 10 }}", -- bright green
-    "{{ index $a 11 }}", -- bright yellow
-    "{{ index $a 12 }}", -- bright blue
-    "{{ index $a 13 }}", -- bright purple
-    "{{ index $a 14 }}", -- bright aqua
-    "{{ index $a 15 }}", -- bright white
+    "#928374", -- bright black
+    "#fb4934", -- bright red
+    "#b8bb26", -- bright green
+    "#fabd2f", -- bright yellow
+    "#83a598", -- bright blue
+    "#d3869b", -- bright purple
+    "#8ec07c", -- bright aqua
+    "#fbf1c7", -- bright white
   },
 }
 
