@@ -1,7 +1,7 @@
 local w = require("wombat")
 local profile = w.module.config().profile
 
-local data = w.data.toml("knobs/packages.toml")
+local data = w.toml.decode("knobs/packages.toml")
 local commands = data.command or {}
 local pkgs = data.package or {}
 

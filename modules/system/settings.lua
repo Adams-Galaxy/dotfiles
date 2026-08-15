@@ -2,7 +2,7 @@ local w = require("wombat")
 local config = w.module.config()
 local profile = config.profile
 
-local raw = w.data.toml("knobs/settings.toml")
+local raw = w.toml.decode("knobs/settings.toml")
 local overrides = (raw.profiles and raw.profiles[profile]) or {}
 
 local function merge(base, over)

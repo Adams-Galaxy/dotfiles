@@ -9,7 +9,7 @@ local input = w.inputs({
 -- modules/bootstrap.lua only declares needs, it never touches providers.
 -- [package.*] entries name their provider package directly and need no
 -- alias translation.
-local commands = w.data.toml("knobs/packages.toml").command or {}
+local commands = w.toml.decode("knobs/packages.toml").command or {}
 
 local function merged_aliases()
     local aliases = {}
