@@ -1,0 +1,55 @@
+local wezterm = require("wezterm")
+
+local colors = {
+  foreground = "{{theme.ui.foreground}}",
+  background = "{{theme.ui.background}}",
+  cursor_bg = "{{theme.ui.cursor}}",
+  cursor_fg = "{{theme.ui.background}}",
+  cursor_border = "{{theme.ui.cursor}}",
+  selection_fg = "{{theme.ui.background}}",
+  selection_bg = "{{theme.ui.foreground}}",
+  ansi = {
+    "{{theme.ansi.black}}",
+    "{{theme.ansi.red}}",
+    "{{theme.ansi.green}}",
+    "{{theme.ansi.yellow}}",
+    "{{theme.ansi.blue}}",
+    "{{theme.ansi.magenta}}",
+    "{{theme.ansi.cyan}}",
+    "{{theme.ansi.white}}",
+  },
+  brights = {
+    "{{theme.ansi.bright_black}}",
+    "{{theme.ansi.bright_red}}",
+    "{{theme.ansi.bright_green}}",
+    "{{theme.ansi.bright_yellow}}",
+    "{{theme.ansi.bright_blue}}",
+    "{{theme.ansi.bright_magenta}}",
+    "{{theme.ansi.bright_cyan}}",
+    "{{theme.ansi.bright_white}}",
+  },
+}
+
+return {
+  colors = colors,
+
+  font = wezterm.font("JetBrainsMono Nerd Font"),
+  font_size = 16.0,
+
+  -- 'Cursor Type': 0 (box) + 'Blinking Cursor': true.
+  default_cursor_style = "BlinkingBlock",
+
+  window_background_opacity = 0.66,
+  macos_window_background_blur = 40,
+
+  window_padding = {
+    left = 30,
+    right = 20,
+    top = 28,
+    bottom = 0,
+  },
+
+  enable_tab_bar = false,
+
+  window_decorations = "RESIZE | MACOS_FORCE_ENABLE_SHADOW",
+}

@@ -1,4 +1,5 @@
 local w = require("wombat")
+local p = w.paths
 local profile = w.module.config().profile
 
 local data = w.toml.decode("knobs/packages.toml")
@@ -10,7 +11,7 @@ local function os_matches(entry)
         return true
     end
     for _, name in ipairs(entry.os) do
-        if name == w.target.os.name then
+        if name == w.os.name then
             return true
         end
     end
@@ -51,8 +52,8 @@ end
 
 -- antidote doesn't fit knobs/packages.toml's [package.*] shape - its
 -- provider AND `with` differ per platform, and the Linux `with.to`
--- needs w.host.home, which a static TOML table can't express.
-if w.target.os.name == "macos" then
+-- needs p.home, which a static TOML table can't express.
+if w.macos then
     -- Confirmed via `brew list antidote`: the formula ships only
     -- share/antidote/antidote.zsh and a functions/ dir, no bin/ at all -
     -- there is no command to check, ever, on this platform.
@@ -68,7 +69,7 @@ else
         when = "deploy.before",
         with = {
             repository = "https://github.com/mattmc3/antidote.git",
-            to = w.host.home .. "/.antidote",
+            to = p.home .. "/.antidote",
         },
     })
 end

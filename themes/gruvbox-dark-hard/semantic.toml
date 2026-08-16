@@ -1,0 +1,66 @@
+# These values are references or transforms only. Palette literals belong in
+# palette.toml, never in semantic roles or consumer templates.
+
+[ui]
+background = "palette.bg0_hard"
+foreground = "palette.fg1"
+surface = "palette.bg1"
+surface_raised = "palette.bg2"
+overlay = "palette.bg3"
+border = "palette.bg3"
+border_subtle = "palette.border_subtle"
+selection = { ref = "palette.aqua", alpha = 0.50 }
+cursor = "palette.fg1"
+accent = "palette.blue_bright"
+muted = "palette.fg3"
+
+[syntax]
+comment = "palette.gray"
+string = "palette.green_bright"
+number = "palette.purple_bright"
+boolean = "palette.purple_bright"
+keyword = "palette.red_bright"
+operator = "palette.orange_bright"
+function = "palette.blue_bright"
+method = "palette.blue_bright"
+variable = "palette.fg1"
+parameter = "palette.orange_bright"
+property = "palette.aqua_bright"
+type = "palette.yellow_bright"
+constant = "palette.purple_bright"
+constructor = "palette.yellow_bright"
+namespace = "palette.aqua_bright"
+punctuation = "palette.fg3"
+tag = "palette.green_bright"
+attribute = "palette.orange_bright"
+
+[diagnostic]
+error = "palette.red_bright"
+warn = "palette.yellow_bright"
+info = "palette.blue_bright"
+hint = "palette.aqua_bright"
+ok = "palette.green_bright"
+
+[diff]
+add = "palette.green_bright"
+change = "palette.blue_bright"
+delete = "palette.red_bright"
+text = "palette.yellow_bright"
+
+[ansi]
+black = "palette.bg1"
+red = "palette.red"
+green = "palette.green"
+yellow = "palette.yellow"
+blue = "palette.blue"
+magenta = "palette.purple"
+cyan = "palette.aqua"
+white = "palette.fg4"
+bright_black = "palette.gray"
+bright_red = "palette.red_bright"
+bright_green = "palette.green_bright"
+bright_yellow = "palette.yellow_bright"
+bright_blue = "palette.blue_bright"
+bright_magenta = "palette.purple_bright"
+bright_cyan = "palette.aqua_bright"
+bright_white = "palette.fg1"

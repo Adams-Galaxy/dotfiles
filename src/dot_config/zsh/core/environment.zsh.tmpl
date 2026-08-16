@@ -1,0 +1,49 @@
+# Shared shell environment and cached tool initialisation.
+
+export EDITOR="nvim"
+export VISUAL="nvim"
+export SHELL_EDITOR="nvim"
+export GUI_EDITOR="code"
+export PAGER="less"
+export LANG="en_US.UTF-8"
+export SCRIPTS="$DOTFILES/scripts"
+
+export WOMBAT_SOURCE_DIR="${WOMBAT_SOURCE_DIR:-$HOME/.local/share/wombat}"
+
+export ZSH_CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
+export ZSH_COMPDUMP="$ZSH_CACHE_DIR/zcompdump"
+
+# Source the output of a tool's shell-init instead of re-running it every
+# startup — each `eval "$(tool init zsh)"` costs a subprocess spawn. The
+# cache is regenerated whenever the tool's binary is newer than it, so an
+# upgrade picks up the new init automatically.
+cache_init() {
+  local name="$1"; shift
+  local cache="$ZSH_CACHE_DIR/init-$name.zsh"
+
+  if [[ ! -f "$cache" || "${commands[$1]}" -nt "$cache" ]]; then
+    [[ -d "$ZSH_CACHE_DIR" ]] || mkdir -p "$ZSH_CACHE_DIR"
+    "$@" > "$cache" 2>/dev/null || { rm -f "$cache"; return 1 }
+  fi
+
+  source "$cache"
+}
+
+# Resolved from the selected Wombat theme at materialisation time.
+export FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS:---height 40% --layout=reverse --border \
+--color=fg:{{theme.palette.fg1}},fg+:{{theme.palette.fg0}},bg+:{{theme.palette.bg1}} \
+--color=hl:{{theme.palette.blue_bright}},hl+:{{theme.palette.orange_bright}} \
+--color=info:{{theme.palette.aqua_bright}},marker:{{theme.palette.orange_bright}} \
+--color=prompt:{{theme.palette.yellow_bright}},spinner:{{theme.palette.yellow_bright}} \
+--color=pointer:{{theme.palette.yellow_bright}},header:{{theme.palette.blue_bright}} \
+--color=border:{{theme.palette.bg3}},label:{{theme.palette.fg1}}}"
+
+# Same theme, for gum (charmbracelet/gum below, and anything else
+# reaching for it later). Namespaced GUM_TABLE_* env vars only, not gum style's bare
+# $FOREGROUND/$BORDER_FOREGROUND — those are too generically named to
+# export globally without risking collisions with something else
+# expecting them unscoped.
+export GUM_TABLE_BORDER="rounded"
+export GUM_TABLE_BORDER_FOREGROUND="{{theme.ui.border_subtle}}"
+export GUM_TABLE_HEADER_FOREGROUND="{{theme.palette.blue_bright}}"
+export GUM_TABLE_CELL_FOREGROUND="{{theme.palette.fg1}}"

@@ -1,0 +1,92 @@
+[mgr]
+cwd = { fg = "{{theme.palette.aqua_bright}}" }
+
+find_keyword = { bold = true, fg = "{{theme.palette.yellow_bright}}" }
+find_position = { fg = "{{theme.palette.purple_bright}}" }
+
+marker_copied = { fg = "{{theme.palette.green_bright}}", bg = "{{theme.palette.green_bright}}" }
+marker_cut = { fg = "{{theme.palette.red_bright}}", bg = "{{theme.palette.red_bright}}" }
+marker_selected = { fg = "{{theme.palette.yellow_bright}}", bg = "{{theme.palette.yellow_bright}}" }
+
+count_copied = { fg = "{{theme.palette.bg0_hard}}", bg = "{{theme.palette.green_bright}}" }
+count_cut = { fg = "{{theme.palette.bg0_hard}}", bg = "{{theme.palette.red_bright}}" }
+count_selected = { fg = "{{theme.palette.bg0_hard}}", bg = "{{theme.palette.yellow_bright}}" }
+
+border_style = { fg = "{{theme.palette.blue_bright}}" }
+
+[tabs]
+active = { fg = "{{theme.palette.bg0_hard}}", bg = "{{theme.palette.blue_bright}}"}
+inactive = { fg = "{{theme.palette.blue_bright}}", bg = "{{theme.palette.bg1}}" }
+
+[indicator]
+parent = { reversed = true }
+current = { reversed = true }
+preview = { underline = true }
+
+[mode]
+normal_main = { fg = "{{theme.palette.bg0_hard}}", bg = "{{theme.palette.blue_bright}}", bold = true }
+normal_alt = { fg = "{{theme.palette.blue_bright}}", bg = "{{theme.palette.bg2}}" }
+
+select_alt = { fg = "{{theme.palette.purple_bright}}", bg = "{{theme.palette.bg2}}" }
+select_main = { fg = "{{theme.palette.bg0_hard}}", bg = "{{theme.palette.purple_bright}}", bold = true }
+
+unset_main = { fg = "{{theme.palette.bg0_hard}}", bg = "{{theme.palette.red_bright}}", bold = true }
+unset_alt = { fg = "{{theme.palette.red_bright}}", bg = "{{theme.palette.bg2}}" }
+
+[status]
+perm_exec = { fg = "{{theme.palette.green_bright}}" }
+perm_read = { fg = "{{theme.palette.yellow_bright}}" }
+perm_sep = { fg = "{{theme.palette.aqua_bright}}" }
+perm_type = { fg = "{{theme.palette.blue_bright}}" }
+perm_write = { fg = "{{theme.palette.red_bright}}" }
+
+progress_error = { fg = "{{theme.palette.red_bright}}", bg = "{{theme.palette.bg0_hard}}" }
+progress_label = { fg = "{{theme.palette.fg2}}", bg = "{{theme.palette.bg0_hard}}" }
+progress_normal = { fg = "{{theme.palette.fg2}}", bg = "{{theme.palette.bg0_hard}}" }
+
+[pick]
+active = { fg = "{{theme.palette.purple_bright}}" }
+border = { fg = "{{theme.palette.blue_bright}}" }
+inactive = { fg = "{{theme.palette.fg2}}" }
+
+[task]
+title = { fg = "{{theme.palette.blue_bright}}" }
+border = { fg = "{{theme.palette.blue_bright}}" }
+hovered = { fg = "{{theme.palette.fg2}}", bg = "{{theme.palette.bg2}}" }
+
+[input]
+border = { fg = "{{theme.palette.blue_bright}}" }
+selected = { bg = "{{theme.palette.bg2}}" }
+
+[help]
+desc = { fg = "{{theme.palette.fg2}}" }
+on = { fg = "{{theme.palette.aqua_bright}}" }
+run = { fg = "{{theme.palette.purple_bright}}" }
+hovered = { reversed = true, bold = true }
+footer = { fg = "{{theme.palette.bg2}}", bg = "{{theme.palette.fg2}}" }
+
+[which]
+mask = { bg = "{{theme.palette.bg2}}" }
+desc = { fg = "{{theme.palette.fg2}}" }
+cand = { fg = "{{theme.palette.aqua_bright}}" }
+rest = { fg = "{{theme.palette.orange}}" }
+
+separator_style = { fg = "{{theme.palette.fg3}}" }
+
+[notify]
+title_info = { fg = "{{theme.palette.aqua_bright}}" }
+title_warn = { fg = "{{theme.palette.yellow_bright}}" }
+title_error = { fg = "{{theme.palette.red_bright}}" }
+
+[filetype]
+rules = [
+  { mime = "image/*", fg = "{{theme.palette.aqua_bright}}" },
+  { mime = "{audio, video}/*", fg = "{{theme.palette.yellow_bright}}" },
+
+  { mime = "application/{pdf,doc,rtf}", fg = "{{theme.palette.green_bright}}" },
+
+  { mime = "application/" },
+
+  { url = "*/", fg = "{{theme.palette.blue_bright}}" },
+  { mime = "*", fg = "{{theme.palette.fg2}}" },
+]

@@ -1,5 +1,5 @@
--- Gruvbox dark-hard: the same hex palette as tmux (gruvbox-tmux) and
--- starship's gruvbox_dark table, so all three stay pixel-identical.
+-- Gruvbox remains plugin-owned for now. The shared Wombat palette drives the
+-- terminal surface; a later editor pass will feed this plugin's overrides.
 return {
   {
     "ellisonleao/gruvbox.nvim",

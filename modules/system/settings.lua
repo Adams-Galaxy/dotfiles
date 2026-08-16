@@ -19,4 +19,5 @@ end
 return {
     git = merge(raw.git, overrides.git),
     shell = merge(raw.shell, overrides.shell),
+    theme = merge(raw.theme, overrides.theme),
 }

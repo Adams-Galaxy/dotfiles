@@ -35,7 +35,7 @@
 #
 # Known gap, not expressed here:
 #   - antidote: needs a different provider *and* a dynamic `with.to`
-#     (w.host.home) per platform, which a static TOML table can't
+#     (w.paths.home) per platform, which a static TOML table can't
 #     express cleanly. Handled explicitly in modules/system/bootstrap.lua
 #     instead, right after this file is loaded.
 

@@ -1,0 +1,15 @@
+# Small system-inspection and utility workflows.
+
+envn() { env | cut -d= -f1 | sort }
+cols() { tput cols }
+rows() { tput lines }
+tsize() { print "$(cols) $(rows)" }
+
+song() {
+  if command -v mufetch >/dev/null 2>&1; then
+    mufetch search "$@"
+  else
+    print -u2 "mufetch is not installed"
+    return 127
+  fi
+}

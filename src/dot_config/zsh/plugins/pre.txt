@@ -1,0 +1,5 @@
+# Plugins that must load before compinit.
+#
+# zsh-completions only contributes completion functions to fpath, and
+# compinit can only pick up what is already in fpath when it runs.
+zsh-users/zsh-completions

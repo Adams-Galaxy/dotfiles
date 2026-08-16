@@ -1,0 +1,72 @@
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/master/doc/json_schema.json",
+  // Compact bracket: same modules and format overrides as config.jsonc,
+  // flattened into one box instead of four — for shorter terminals where
+  // the category headers/extra borders in the full layout
+  // (dot_config/zsh/ui/splash.zsh picks between the two by $LINES)
+  // would push the important stuff off-screen or force a scroll. Every
+  // key is icon-only (no text labels, matched against
+  // github.com/ryanoasis/nerd-fonts glyphnames.json rather than guessed)
+  // and keyColor still walks the same orange/Hardware -> yellow/Software
+  // -> cyan/Desktop -> blue/Extras progression as config.jsonc's section
+  // borders, just without the borders themselves to mark the boundaries.
+  // Orange isn't in the named ANSI set fastfetch resolves through the
+  // terminal palette (unlike the other three) — resolved from the selected
+  // theme here as the one exception.
+  "logo": {
+    "type": "file-raw",
+    "source": "/Users/adamwilliams/dev/ascii-art/examples/icon.txt",
+    "padding": {
+      "left": 2
+    }
+  },
+  "display": {
+    "disableLinewrap": true,
+    "color": {
+      "title": "bright_cyan",
+      "keys": "bright_yellow"
+    }
+  },
+  "modules": [
+    "title",
+    "separator",
+
+    { "type": "custom", "format": "\u001b[90m╭─────────────────────System─────────────────────╮" },
+
+    { "type": "host", "key": "󰌢 ", "keyColor": "{{theme.palette.orange_bright}}" },
+    { "type": "cpu", "key": "│ ├󰻠 ", "keyColor": "{{theme.palette.orange_bright}}", "format": "{name:-32} ({core-types}) @ {freq-max}" },
+    { "type": "gpu", "key": "│ ├󰍹 ", "keyColor": "{{theme.palette.orange_bright}}", "format": "{name:-32} ({core-count}) @ {frequency} [{type}]" },
+    { "type": "memory", "key": "│ ├󰑭 ", "keyColor": "{{theme.palette.orange_bright}}" },
+    { "type": "swap", "key": "│ ├󰓡 ", "keyColor": "{{theme.palette.orange_bright}}" },
+    { "type": "disk", "key": "│ ├󰋊 ", "keyColor": "{{theme.palette.orange_bright}}", "format": "{size-used} / {size-total} ({size-percentage})" },
+
+    { "type": "os", "key": "│ ├ ", "keyColor": "yellow" },
+    { "type": "kernel", "key": "│ ├󰌽 ", "keyColor": "yellow" },
+    { "type": "packages", "key": "│ ├󰏗 ", "keyColor": "yellow" },
+    { "type": "shell", "key": "│ ├󰞷 ", "keyColor": "yellow" },
+
+    { "type": "de", "key": "│ ├󰧨 ", "keyColor": "cyan" },
+    { "type": "display", "key": "│ ├󰔂 ", "keyColor": "cyan", "format": "{width}x{height} @ {refresh-rate} Hz" },
+    { "type": "icons", "key": "│ ├󰏘 ", "keyColor": "cyan" },
+    { "type": "terminalfont", "key": "│ ├󰛖 ", "keyColor": "cyan" },
+    { "type": "terminal", "key": "│ ├󰆍 ", "keyColor": "cyan", "format": "{pretty-name:-24}" },
+
+    { "type": "uptime", "key": "│ ├󰅐 ", "keyColor": "blue" },
+    { "type": "localip", "key": "│ ├󰩠 ", "keyColor": "blue" },
+    { "type": "poweradapter", "key": "│ ├󰚥 ", "keyColor": "blue" },
+    // Last on purpose: battery is always present on this laptop, unlike
+    // poweradapter (only reports something while actually charging) — so
+    // the closing "└" tree glyph doesn't disappear whenever the adapter
+    // is unplugged and that row goes silent.
+    { "type": "battery", "key": "└ └󰁹 ", "keyColor": "blue", "format": "{capacity} ({time-hours}h {time-minutes}m remaining) [{status}]" },
+
+    { "type": "custom", "format": "\u001b[90m╰────────────────────────────────────────────────╯" },
+    "break",
+
+    {
+      "type": "colors",
+      "paddingLeft": 2,
+      "symbol": "circle"
+    }
+  ]
+}

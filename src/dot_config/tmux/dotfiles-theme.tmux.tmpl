@@ -1,0 +1,24 @@
+# Generated from the selected Wombat theme. It preserves the former
+# gruvbox-tmux layout while making this repository, not a TPM plugin, own its
+# palette and presentation.
+set -g status on
+set -g status-style 'fg={{theme.palette.fg1}},bg=default'
+set -g status-justify left
+set -g status-left-length 100
+set -g status-right-length 140
+set -g status-left '#[fg={{theme.palette.orange}},bg=default]#[fg={{theme.palette.fg1}},bg={{theme.palette.orange}},bold]  #S #{prefix_highlight}'
+set -g status-right '#[fg={{theme.palette.orange}},bg=default]#[fg={{theme.palette.fg1}},bg={{theme.palette.orange}}]   #[fg={{theme.palette.yellow}},bg={{theme.palette.orange}}]#[fg={{theme.palette.fg1}},bg={{theme.palette.yellow}}] #{b:pane_current_path} #[fg={{theme.palette.aqua}},bg={{theme.palette.yellow}}]#[fg={{theme.palette.fg1}},bg={{theme.palette.aqua}}]   #{cpu_percentage} #[fg={{theme.palette.blue}},bg={{theme.palette.aqua}}]#[fg={{theme.palette.fg1}},bg={{theme.palette.blue}}] #{battery_icon_charge}  #{battery_percentage} #[fg={{theme.palette.bg3}},bg={{theme.palette.blue}}]#[fg={{theme.palette.blue_bright}},bg={{theme.palette.bg3}}] 󰒋  #H #[fg={{theme.palette.bg1}},bg={{theme.palette.bg3}}]#[fg={{theme.palette.fg1}},bg={{theme.palette.bg1}}]   %I:%M %p #[fg={{theme.palette.bg1}},bg=default]'
+
+set -g message-style 'fg={{theme.palette.blue_bright}},bg={{theme.palette.bg2}},align=centre'
+set -g message-command-style 'fg={{theme.palette.yellow_bright}},bg={{theme.palette.bg2}},align=centre'
+set -g pane-border-style 'fg={{theme.palette.bg3}}'
+set -g pane-active-border-style 'fg={{theme.palette.green_bright}}'
+
+setw -g clock-mode-colour '{{theme.palette.yellow_bright}}'
+setw -g mode-style 'fg={{theme.palette.bg0_hard}},bg={{theme.palette.yellow_bright}},bold'
+setw -g window-status-activity-style 'fg={{theme.palette.orange_bright}},bg=default,bold'
+setw -g window-status-bell-style 'fg={{theme.palette.bg0_hard}},bg={{theme.palette.red_bright}},bold'
+setw -g window-status-separator ''
+setw -g window-status-style 'fg={{theme.palette.fg3}},bg=default,none'
+setw -g window-status-format '#[fg={{theme.palette.orange}},bg={{theme.palette.bg3}}]#{?window_start_flag,,}#[fg={{theme.palette.fg2}},bg={{theme.palette.bg3}}] #I:#W #[fg={{theme.palette.bg3}},bg=default]#{?window_end_flag,,}'
+setw -g window-status-current-format '#[fg={{theme.palette.orange}},bg={{theme.palette.yellow}}]#{?window_start_flag,,}#[fg={{theme.palette.bg3}},bg={{theme.palette.yellow}}]#{?window_start_flag,,}#[fg={{theme.palette.fg1}},bg={{theme.palette.yellow}},bold] #I:#W #[fg={{theme.palette.yellow}},bg={{theme.palette.bg3}},nobold]#{?window_end_flag,,}#[fg={{theme.palette.yellow}},bg=default]#{?window_end_flag,,}'

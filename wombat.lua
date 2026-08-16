@@ -24,7 +24,7 @@ end
 
 local aliases = merged_aliases()
 
-if w.target.os.name == "macos" then
+if w.macos then
     w.providers({ { name = "brew", with = { aliases = aliases.brew or {} } } })
 else
     -- git is only needed for the antidote package.lua fallback below - not
@@ -35,6 +35,7 @@ else
 end
 
 w.use("settings", { profile = input.profile })
+w.use("theme")
 w.use("bootstrap", { profile = input.profile })
 w.use("shell")
 w.use("zsh", { profile = input.profile })

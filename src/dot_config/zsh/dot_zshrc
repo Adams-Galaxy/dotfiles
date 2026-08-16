@@ -1,111 +1,47 @@
-if [[ -n "${ZSHRC_LOADED:-}" ]]; then
-  export ZSHRC_RELOADED=1
-fi
+# Wombat-managed interactive Zsh startup.
+#
+# The order below is intentional: completion functions must enter fpath before
+# compinit, and fzf-tab must attach after compinit but before later ZLE wrappers.
 
+[[ -n "${ZSHRC_LOADED:-}" ]] && export ZSHRC_RELOADED=1
 export DOTFILES="$HOME/.config/zsh"
 
-# Shared config
-source "$DOTFILES/env/common.zsh"
-source "$DOTFILES/env/aliases.zsh"
-source "$DOTFILES/env/path.zsh"
-source "$DOTFILES/env/completion.zsh"
-source "$DOTFILES/env/functions.zsh"
-source "$DOTFILES/env/fzf.zsh"
-source "$DOTFILES/env/fzf-git.zsh"
-source "$DOTFILES/env/dotpkg.zsh"
-source "$DOTFILES/env/dotfiles-nav.zsh"
-source "$DOTFILES/env/tmux.zsh"
+source "$DOTFILES/core/environment.zsh"
+source "$DOTFILES/core/path.zsh"
+source "$DOTFILES/core/aliases.zsh"
 
-# Per-project shell environments (~/dev/burrow), not managed by this repo
-if [[ -f "$HOME/dev/burrow/burrow.plugin.zsh" ]]; then
-  source "$HOME/dev/burrow/burrow.plugin.zsh"
-fi
-
-# OS-specific config
 case "$(uname -s)" in
-  Darwin)
-    source "$DOTFILES/os/macos.zsh"
-    ;;
-  Linux)
-    source "$DOTFILES/os/linux.zsh"
-    ;;
+  Darwin) source "$DOTFILES/platform/macos.zsh" ;;
+  Linux) source "$DOTFILES/platform/linux.zsh" ;;
 esac
 
-# Optional local overrides
-if [[ -f "$DOTFILES/local/local.zsh" ]]; then
-  source "$DOTFILES/local/local.zsh"
-fi
+source "$DOTFILES/tools/editor.zsh"
+source "$DOTFILES/tools/python.zsh"
+source "$DOTFILES/tools/yazi.zsh"
+source "$DOTFILES/tools/system.zsh"
+source "$DOTFILES/tools/clipboard.zsh"
+source "$DOTFILES/tools/tmux.zsh"
+source "$DOTFILES/tools/dotfiles.zsh"
+source "$DOTFILES/tools/fuzzy/files.zsh"
+source "$DOTFILES/tools/fuzzy/search.zsh"
+source "$DOTFILES/tools/fuzzy/git.zsh"
+source "$DOTFILES/tools/fuzzy/system.zsh"
+source "$DOTFILES/tools/fuzzy/project.zsh"
 
-# Plugins (antidote). Each .txt is a manifest, compiled once into a static
-# .zsh bundle so startup is a plain `source` with no plugin-manager
-# overhead. Regenerated automatically whenever a manifest changes.
-#
-# There are two manifests because load order around compinit matters:
-#   .pre.txt  completion functions that must be in fpath before compinit
-#   .txt      fzf-tab and the ZLE widget wrappers, which need compinit done
-_load_plugin_bundle() {
-  local txt="$1" bundle="$2" antidote_zsh candidate
+source "$DOTFILES/completion/setup.zsh"
+source "$DOTFILES/plugins/loader.zsh"
+load_zsh_plugin_bundle "$DOTFILES/plugins/pre.txt" "$ZSH_CACHE_DIR/zsh_plugins.pre.zsh"
+source "$DOTFILES/completion/compinit.zsh"
+load_zsh_plugin_bundle "$DOTFILES/plugins/post.txt" "$ZSH_CACHE_DIR/zsh_plugins.zsh"
+unfunction load_zsh_plugin_bundle
+source "$DOTFILES/completion/fzf-tab.zsh"
 
-  [[ -f "$txt" ]] || return 0
+source "$DOTFILES/ui/prompt.zsh"
+source "$DOTFILES/ui/splash.zsh"
 
-  if [[ ! -f "$bundle" || "$txt" -nt "$bundle" ]]; then
-    for candidate in \
-      "$HOMEBREW_PREFIX/opt/antidote/share/antidote/antidote.zsh" \
-      /opt/homebrew/opt/antidote/share/antidote/antidote.zsh \
-      /usr/local/opt/antidote/share/antidote/antidote.zsh \
-      "$HOME/.antidote/antidote.zsh"; do
-      [[ -f "$candidate" ]] && { antidote_zsh="$candidate"; break }
-    done
-    if [[ -n "$antidote_zsh" ]]; then
-      [[ -d "$ZSH_CACHE_DIR" ]] || mkdir -p "$ZSH_CACHE_DIR"
-      source "$antidote_zsh"
-      antidote bundle < "$txt" > "$bundle"
-    fi
-  fi
-
-  [[ -f "$bundle" ]] && source "$bundle"
-}
-
-_load_plugin_bundle "$DOTFILES/zsh_plugins.pre.txt" "$ZSH_CACHE_DIR/zsh_plugins.pre.zsh"
-
-# Add the completions directory to fpath so compinit can find them.
-fpath=("$HOME/.config/zsh/completions" $fpath)
-
-# compinit sits between the two bundles: zsh-completions (above) contributes
-# to fpath and compinit only picks up what's in fpath when it runs, while
-# fzf-tab (below) must bind its widget after compinit exists.
-#
-# -C skips compaudit, the insecure-directory scan, which costs ~34ms. We
-# still want that check to happen — just not on every single shell — so the
-# dump is rebuilt in full (audit included) once a day and reused otherwise.
-# The glob qualifier needs extended_glob, and must be expanded in an array
-# assignment: filename generation doesn't happen inside [[ ]].
-autoload -Uz compinit
-() {
-  emulate -L zsh
-  setopt local_options extended_glob
-
-  local -a stale
-  stale=( ${ZSH_COMPDUMP}(#qN.mh+24) )
-
-  if (( ${#stale} )) || [[ ! -f "$ZSH_COMPDUMP" ]]; then
-    compinit -d "$ZSH_COMPDUMP"
-    # Compile the dump so later startups load bytecode instead of reparsing.
-    { zcompile -R -- "$ZSH_COMPDUMP".zwc "$ZSH_COMPDUMP" } &!
-  else
-    compinit -C -d "$ZSH_COMPDUMP"
-  fi
-}
-
-_load_plugin_bundle "$DOTFILES/zsh_plugins.txt" "$ZSH_CACHE_DIR/zsh_plugins.zsh"
-unfunction _load_plugin_bundle
-
-# zstyles are read lazily at completion time, but keep this next to the
-# plugin it configures.
-source "$DOTFILES/env/fzf-tab.zsh"
-
-source "$DOTFILES/env/prompt.zsh"
-source "$DOTFILES/env/splash.zsh"
+# Local state stays outside Wombat so machine-specific settings never enter
+# the deployed source tree. It loads last and may deliberately override defaults.
+[[ -r "$DOTFILES/local.zsh" ]] && source "$DOTFILES/local.zsh"
 
 if [[ -o interactive ]] && ! splash_should_skip; then
   clear

@@ -5,7 +5,7 @@
 -- up front. Every one of those four keys is already load-bearing here:
 -- Ctrl-hjkl is vim-tmux-navigator's pane/split navigation (dot_tmux.conf
 -- and nvim's keymaps.lua) and Ctrl-l specifically is also fzf-tab's
--- continuous-trigger (dot_config/zsh/env/fzf-tab.zsh) — so unlike Cmd-h,
+-- continuous-trigger (dot_config/zsh/completion/fzf-tab.zsh) — so unlike Cmd-h,
 -- this isn't one accidental macOS system shortcut, it's most of WezTerm's
 -- own default table standing in the way. Cmd-h has the same
 -- HideApplication problem for the resize binds (nvim keymaps.lua).
