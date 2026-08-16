@@ -94,7 +94,7 @@ os = ["macos"]
 [command.tmux]
 
 [command.delta]
-alias = { brew = "git-delta" }
+alias = { brew = "git-delta", apt = "git-delta" }
 
 [command.tree-sitter]
 alias = { apt = "tree-sitter-cli" }
