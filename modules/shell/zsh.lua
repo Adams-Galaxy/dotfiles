@@ -45,6 +45,9 @@ w.module.from(".config")
 w.install("zsh", {
     with = w.template.context({
         clipboard = clipboard_backend(),
+        features = {
+            mufetch = w.macos,
+        },
         os = w.os,
         paths = w.paths,
         theme = theme,

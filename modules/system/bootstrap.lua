@@ -45,6 +45,7 @@ for name, pkg in pairs(pkgs) do
         w.need.package(name, {
             provider = pkg.provider,
             with = pkg.with,
+            publishes = pkg.publishes,
             when = "deploy.before",
         })
     end

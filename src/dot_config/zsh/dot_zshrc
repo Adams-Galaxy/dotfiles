@@ -36,7 +36,14 @@ load_zsh_plugin_bundle "$DOTFILES/plugins/post.txt" "$ZSH_CACHE_DIR/zsh_plugins.
 unfunction load_zsh_plugin_bundle
 source "$DOTFILES/completion/fzf-tab.zsh"
 
-source "$DOTFILES/ui/prompt.zsh"
+# External tools attach after completion infrastructure is ready. Generated
+# completion hooks belong here because they are tool lifecycle code, not Zsh's
+# static completion policy.
+source "$DOTFILES/init/cache.zsh"
+source "$DOTFILES/init/integrations.zsh"
+source "$DOTFILES/init/completions.zsh"
+
+source "$DOTFILES/ui/diagnostics.zsh"
 source "$DOTFILES/ui/splash.zsh"
 
 # Local state stays outside Wombat so machine-specific settings never enter

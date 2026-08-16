@@ -28,6 +28,9 @@
 #     provider  Pin to one provider by name. Optional - omit to
 #               auto-try every configured provider, same as command.
 #     with      Provider-specific data, passed straight through.
+#     publishes Commands installed by the package. This preserves their
+#               identity in the frozen provider binding when the package
+#               itself, rather than a command requirement, owns resolution.
 #
 # Both shapes share:
 #   os        Array of "macos"/"linux". Omit = both.
@@ -64,6 +67,7 @@ os = ["macos"]
 [command.nvim]
 
 [command.yazi]
+os = ["macos"]
 
 [command.fastfetch]
 
@@ -82,6 +86,7 @@ alias = { apt = "fd-find" }
 [command.lazygit]
 
 [command.lazydocker]
+os = ["macos"]
 
 [command.btop]
 
@@ -91,6 +96,7 @@ alias = { apt = "fd-find" }
 alias = { brew = "git-delta" }
 
 [command.tree-sitter]
+alias = { apt = "tree-sitter-cli" }
 
 [command.tldr]
 alias = { brew = "tealdeer", apt = "tealdeer" }
@@ -100,3 +106,9 @@ alias = { brew = "tealdeer", apt = "tealdeer" }
 [package.ca-certificates]
 os = ["linux"]
 provider = "apt"
+
+[package.yazi]
+os = ["linux"]
+provider = "apt"
+with = { source = "yazi" }
+publishes = { commands = ["yazi", "ya"] }

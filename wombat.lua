@@ -31,7 +31,28 @@ else
     -- registered on macOS, where nothing currently needs it (an unpinned
     -- package candidate git can't resolve, e.g. one with no `with.repository`
     -- at all, hard-errors rather than gracefully skipping).
-    w.providers({ { name = "apt", with = { update = true, aliases = aliases.apt or {} } }, "git" })
+    w.providers({
+        {
+            name = "apt",
+            with = {
+                update = true,
+                aliases = aliases.apt or {},
+                sources = {
+                    yazi = {
+                        uri = "https://yazi-rs.github.io/builds/",
+                        suite = "stable",
+                        components = { "main" },
+                        architectures = { "amd64", "arm64" },
+                        key = {
+                            url = "https://yazi-rs.github.io/builds/yazi-keyring.gpg",
+                            format = "gpg",
+                        },
+                    },
+                },
+            },
+        },
+        "git",
+    })
 end
 
 w.use("settings", { profile = input.profile })

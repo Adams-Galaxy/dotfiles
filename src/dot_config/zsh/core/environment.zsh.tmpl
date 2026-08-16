@@ -1,4 +1,4 @@
-# Shared shell environment and cached tool initialisation.
+# Shared shell environment.
 
 export EDITOR="nvim"
 export VISUAL="nvim"
@@ -12,22 +12,6 @@ export WOMBAT_SOURCE_DIR="${WOMBAT_SOURCE_DIR:-$HOME/.local/share/wombat}"
 
 export ZSH_CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
 export ZSH_COMPDUMP="$ZSH_CACHE_DIR/zcompdump"
-
-# Source the output of a tool's shell-init instead of re-running it every
-# startup — each `eval "$(tool init zsh)"` costs a subprocess spawn. The
-# cache is regenerated whenever the tool's binary is newer than it, so an
-# upgrade picks up the new init automatically.
-cache_init() {
-  local name="$1"; shift
-  local cache="$ZSH_CACHE_DIR/init-$name.zsh"
-
-  if [[ ! -f "$cache" || "${commands[$1]}" -nt "$cache" ]]; then
-    [[ -d "$ZSH_CACHE_DIR" ]] || mkdir -p "$ZSH_CACHE_DIR"
-    "$@" > "$cache" 2>/dev/null || { rm -f "$cache"; return 1 }
-  fi
-
-  source "$cache"
-}
 
 # Resolved from the selected Wombat theme at materialisation time.
 export FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS:---height 40% --layout=reverse --border \
