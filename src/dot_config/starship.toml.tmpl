@@ -33,24 +33,15 @@ palette = 'gruvbox_dark'
 # Starship's named palette vocabulary.
 [palettes.gruvbox_dark]
 color_fg0 = '{{theme.palette.fg1}}'
-color_white_bright = '{{theme.palette.fg0}}'
 color_bg1 = '{{theme.palette.bg1}}'
 color_bg3 = '{{theme.palette.bg3}}'
-color_black_bright = '{{theme.palette.bg4}}'
-color_blue = '{{theme.palette.blue_bright}}'
-color_blue_bright = '{{theme.palette.blue_bright}}'
-color_aqua = '{{theme.palette.aqua_bright}}'
-color_aqua_bright = '{{theme.palette.aqua_bright}}'
-color_green = '{{theme.palette.green_bright}}'
-color_green_bright = '{{theme.palette.green_bright}}'
-color_orange = '{{theme.palette.orange_bright}}'
-color_orange_bright = '{{theme.palette.orange_bright}}'
-color_purple = '{{theme.palette.purple_bright}}'
-color_purple_bright = '{{theme.palette.purple_bright}}'
-color_red = '{{theme.palette.red_bright}}'
-color_red_bright = '{{theme.palette.red_bright}}'
-color_yellow = '{{theme.palette.yellow_bright}}'
-color_yellow_bright = '{{theme.palette.yellow_bright}}'
+color_blue = '{{theme.palette.blue}}'
+color_aqua = '{{theme.palette.aqua}}'
+color_green = '{{theme.palette.green}}'
+color_orange = '{{theme.palette.orange}}'
+color_purple = '{{theme.palette.purple}}'
+color_red = '{{theme.palette.red}}'
+color_yellow = '{{theme.palette.yellow}}'
 
 [os]
 disabled = false
@@ -161,11 +152,11 @@ format = '[[ $symbol( $version) ](fg:color_fg0 bg:color_blue)]($style)'
 [docker_context]
 symbol = ""
 style = "bg:color_bg3"
-format = '[[ $symbol( $context) ](fg:color_blue_bright bg:color_bg3)]($style)'
+format = '[[ $symbol( $context) ](fg:color_blue bg:color_bg3)]($style)'
 
 [conda]
 style = "bg:color_bg3"
-format = '[[ $symbol( $environment) ](fg:color_blue_bright bg:color_bg3)]($style)'
+format = '[[ $symbol( $environment) ](fg:color_blue bg:color_bg3)]($style)'
 
 [pixi]
 style = "bg:color_bg3"
@@ -183,7 +174,7 @@ disabled = false
 [character]
 disabled = false
 success_symbol = '[](bold fg:color_green)'
-error_symbol = '[](bold fg:color_red_bright)'
+error_symbol = '[](bold fg:color_red)'
 vimcmd_symbol = '[](bold fg:color_green)'
 vimcmd_replace_one_symbol = '[](bold fg:color_purple)'
 vimcmd_replace_symbol = '[](bold fg:color_purple)'

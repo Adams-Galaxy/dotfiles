@@ -40,15 +40,3 @@ if command -v fzf >/dev/null 2>&1; then
 		export FZF_ALT_C_COMMAND='fdfind --type d --hidden --follow --exclude .git'
 	fi
 fi
-
-if ! command -v fd >/dev/null 2>&1 && command -v fdfind >/dev/null 2>&1; then
-	fd() {
-		fdfind "$@"
-	}
-fi
-
-if ! command -v bat >/dev/null 2>&1 && command -v batcat >/dev/null 2>&1; then
-	bat() {
-		batcat "$@"
-	}
-fi
