@@ -80,6 +80,7 @@ alias = { apt = "fd-find" }
 [command.rg]
 
 [command.bat]
+os = ["macos"]
 
 [command.gh]
 
@@ -106,6 +107,11 @@ alias = { brew = "tealdeer", apt = "tealdeer" }
 [package.ca-certificates]
 os = ["linux"]
 provider = "apt"
+
+[package.bat]
+os = ["linux"]
+provider = "apt"
+publishes = { commands = ["batcat"] }
 
 [package.yazi]
 os = ["linux"]
