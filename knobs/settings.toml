@@ -1,10 +1,21 @@
 # Shared, mostly-constant settings - not packages, not the theme, just the
 # small facts a few modules need (git identity, etc). Read via
-# w.toml.decode("knobs/settings.toml") and merged with the active profile's
-# overrides in modules/settings.lua.
+# w.toml.decode("knobs/settings.toml") and merged with active machine and
+# platform overrides in modules/system/settings.lua.
 #
-# Add a [profiles.<name>.<section>] table only for the keys that profile
-# actually overrides - anything absent falls back to the section above.
+# Add a [machines.<name>.<section>] or [platforms.<name>.<section>] table only
+# for the keys that layer actually overrides - anything absent falls back to
+# the section above. Platform values win over machine values where both apply.
+
+[machine]
+# The ordinary path is automatic: macOS selects Cary; Fedora and WSL select
+# Bob. Set this to "none" to materialise only shared configuration unless a
+# caller explicitly supplies `-- --machine=cary` or `-- --machine=bob`.
+default = "auto"
+
+# `auto` becomes `none` when automatic selection is disabled. Explicit Cary,
+# Bob, and none selections always remain available through the build input.
+auto_detect = true
 
 [git]
 full_name = "Adam Williams"
@@ -18,12 +29,15 @@ linux_clipboard_backend = "wayland"
 [theme]
 name = "gruvbox-dark-hard"
 
-# Example:
-# [profiles.work.git]
-# email = "you@work-email.com"
+# Examples:
+# [machines.bob.git]
+# email = "you@desktop-email.com"
 #
-# [profiles.work.theme]
+# [machines.cary.theme]
 # name = "a-light-theme"
 #
-# [profiles.x11.shell]
+# [platforms.fedora.shell]
+# linux_clipboard_backend = "wayland"
+#
+# [platforms.linux.shell]
 # linux_clipboard_backend = "x11"

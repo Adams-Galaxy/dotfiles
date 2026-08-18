@@ -1,9 +1,10 @@
 local w = require("wombat")
 local config = w.module.config()
-local profile = config.profile
+local machine = config.machine or {}
 
 local raw = w.toml.decode("knobs/settings.toml")
-local overrides = (raw.profiles and raw.profiles[profile]) or {}
+local machine_overrides = (raw.machines and raw.machines[machine.name]) or {}
+local platform_overrides = (raw.platforms and raw.platforms[machine.platform]) or {}
 
 local function merge(base, over)
     local result = {}
@@ -17,7 +18,8 @@ local function merge(base, over)
 end
 
 return {
-    git = merge(raw.git, overrides.git),
-    shell = merge(raw.shell, overrides.shell),
-    theme = merge(raw.theme, overrides.theme),
+    git = merge(merge(raw.git, machine_overrides.git), platform_overrides.git),
+    shell = merge(merge(raw.shell, machine_overrides.shell), platform_overrides.shell),
+    theme = merge(merge(raw.theme, machine_overrides.theme), platform_overrides.theme),
+    machine = machine,
 }

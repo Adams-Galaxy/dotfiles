@@ -34,7 +34,9 @@
 #
 # Both shapes share:
 #   os        Array of "macos"/"linux". Omit = both.
-#   profiles  Array of profile names (see knobs/settings.toml). Omit = all.
+#   machines  Array of machine names (cary/bob). Omit = all.
+#   platforms Array of platform names (macos/wsl/fedora). Omit = all.
+#              `os` remains useful for broad macos/linux classification.
 #
 # Known gap, not expressed here:
 #   - antidote: needs a different provider *and* a dynamic `with.to`
@@ -52,7 +54,6 @@
 os = ["linux"]
 
 [command.starship]
-os = ["macos"]
 
 [command.zoxide]
 
@@ -67,7 +68,7 @@ os = ["macos"]
 [command.nvim]
 
 [command.yazi]
-os = ["macos"]
+platforms = ["macos", "fedora"]
 
 [command.fastfetch]
 
@@ -80,7 +81,7 @@ alias = { apt = "fd-find" }
 [command.rg]
 
 [command.bat]
-os = ["macos"]
+platforms = ["macos", "fedora"]
 
 [command.gh]
 
@@ -105,16 +106,16 @@ alias = { brew = "tealdeer", apt = "tealdeer" }
 [command.gum]
 
 [package.ca-certificates]
-os = ["linux"]
+platforms = ["wsl"]
 provider = "apt"
 
 [package.bat]
-os = ["linux"]
+platforms = ["wsl"]
 provider = "apt"
 publishes = { commands = ["batcat"] }
 
 [package.yazi]
-os = ["linux"]
+platforms = ["wsl"]
 provider = "apt"
 with = { source = "yazi" }
 publishes = { commands = ["yazi", "ya"] }

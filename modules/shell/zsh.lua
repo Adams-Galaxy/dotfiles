@@ -1,6 +1,7 @@
 local w = require("wombat")
 local settings = w.using("settings")
 local theme = w.using("theme")
+local machine = w.module.config().machine or {}
 
 local function clipboard_backend()
     local selected = {
@@ -21,13 +22,19 @@ local function clipboard_backend()
     end
 
     local backend = settings.shell.linux_clipboard_backend
+    local provider = machine.platform == "fedora" and "dnf"
+        or machine.platform == "wsl" and "apt"
     if backend == "wayland" then
-        w.need.package("wl-clipboard", { provider = "apt", when = "deploy.before" })
+        if provider then
+            w.need.package("wl-clipboard", { provider = provider, when = "deploy.before" })
+        end
         selected.wayland = true
         return selected
     end
     if backend == "x11" then
-        w.need.package("xclip", { provider = "apt", when = "deploy.before" })
+        if provider then
+            w.need.package("xclip", { provider = provider, when = "deploy.before" })
+        end
         selected.x11 = true
         return selected
     end

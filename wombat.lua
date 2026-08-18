@@ -1,8 +1,17 @@
 local w = require("wombat")
 
+local machine_settings = w.toml.decode("knobs/settings.toml").machine or {}
+local machine_resolver = require("machine.resolve")
 local input = w.inputs({
-    profile = w.input.choice({ values = { "personal", "work" }, default = "personal" }),
+    -- `auto` is the ordinary path: macOS selects Cary, while Fedora and WSL
+    -- select Bob. `none` deliberately builds the shared configuration only.
+    machine = w.input.choice({
+        values = { "auto", "none", "cary", "bob" },
+        default = machine_settings.default or "auto",
+    }),
 })
+
+local machine = machine_resolver.resolve(w, input.machine, machine_settings)
 
 -- Provider package-name aliases are root-only config, folded once here
 -- from every [command.*] entry's `alias` table (see knobs/packages.toml) -
@@ -24,9 +33,9 @@ end
 
 local aliases = merged_aliases()
 
-if w.macos then
+if machine.platform == "macos" then
     w.providers({ { name = "brew", with = { aliases = aliases.brew or {} } } })
-else
+elseif machine.platform == "wsl" then
     -- git is only needed for the antidote package.lua fallback below - not
     -- registered on macOS, where nothing currently needs it (an unpinned
     -- package candidate git can't resolve, e.g. one with no `with.repository`
@@ -53,13 +62,36 @@ else
         },
         "git",
     })
+elseif machine.platform == "fedora" then
+    w.providers({
+        { name = "dnf", with = { aliases = aliases.dnf or {} } },
+        "git",
+    })
 end
 
-w.use("settings", { profile = input.profile })
+w.use("machine", { resolved = machine })
+w.use("settings", { machine = machine })
 w.use("theme")
-w.use("bootstrap", { profile = input.profile })
+
+if machine.name == "cary" then
+    w.use("cary")
+elseif machine.name == "bob" then
+    w.use("bob")
+    if machine.platform == "fedora" then
+        w.use("fedora")
+        w.use("kde")
+    elseif machine.platform == "wsl" then
+        w.use("wsl")
+    end
+end
+
+-- A machine layer opts into machine bring-up. Shared artifacts still build
+-- without it, which keeps an unrecognised host safe and useful.
+if machine.enabled then
+    w.use("bootstrap", { machine = machine })
+end
 w.use("shell")
-w.use("zsh", { profile = input.profile })
+w.use("zsh", { machine = machine })
 w.use("git")
 w.use("nvim")
 w.use("tmux")
