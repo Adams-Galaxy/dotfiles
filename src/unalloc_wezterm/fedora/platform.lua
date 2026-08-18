@@ -8,5 +8,7 @@ return {
     top = 28,
     bottom = 0,
   },
+  wayland_window_background_blur = true
+  window_background_opacity = 0.80,
   window_decorations = "RESIZE",
 }
