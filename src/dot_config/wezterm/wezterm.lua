@@ -22,6 +22,16 @@ end
 
 extend(require("config.appearance"))
 extend(require("config.general"))
-extend(require("config.keys"))
+
+-- platform.lua is selected during Wombat construction, so a config copied to
+-- another machine cannot silently keep the old machine's window policy.
+local platform = require("config.platform")
+extend(platform)
+
+local keys = require("config.keys")
+for _, binding in ipairs(platform.keys or {}) do
+  table.insert(keys.keys, binding)
+end
+extend(keys)
 
 return config

@@ -17,6 +17,8 @@
 #              provider's package name differs from the command name -
 #              e.g. `alias.apt = "fd-find"` means: on apt, install
 #              "fd-find" to satisfy the command "fd".
+#              DNF already resolves `rg` and `nvim` itself; the aliases
+#              below cover the remaining Fedora package-name differences.
 #
 #   [package.<name>]  Checked purely against a provider's package
 #                      database - no PATH check at all. Use this for
@@ -54,6 +56,7 @@
 os = ["linux"]
 
 [command.starship]
+platforms = ["macos", "wsl"]
 
 [command.zoxide]
 
@@ -68,7 +71,7 @@ os = ["linux"]
 [command.nvim]
 
 [command.yazi]
-platforms = ["macos", "fedora"]
+platforms = ["macos"]
 
 [command.fastfetch]
 
@@ -76,7 +79,7 @@ platforms = ["macos", "fedora"]
 
 [command.fd]
 accept = ["fdfind"]
-alias = { apt = "fd-find" }
+alias = { apt = "fd-find", dnf = "fd-find" }
 
 [command.rg]
 
@@ -86,6 +89,7 @@ platforms = ["macos", "fedora"]
 [command.gh]
 
 [command.lazygit]
+platforms = ["macos", "wsl"]
 
 [command.lazydocker]
 os = ["macos"]
@@ -95,13 +99,13 @@ os = ["macos"]
 [command.tmux]
 
 [command.delta]
-alias = { brew = "git-delta", apt = "git-delta" }
+alias = { brew = "git-delta", apt = "git-delta", dnf = "git-delta" }
 
 [command.tree-sitter]
-alias = { apt = "tree-sitter-cli" }
+alias = { apt = "tree-sitter-cli", dnf = "tree-sitter-cli" }
 
 [command.tldr]
-alias = { brew = "tealdeer", apt = "tealdeer" }
+alias = { brew = "tealdeer", apt = "tealdeer", dnf = "tealdeer" }
 
 [command.gum]
 

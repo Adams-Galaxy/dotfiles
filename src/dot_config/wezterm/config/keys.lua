@@ -46,34 +46,6 @@ end
 passthrough("LeftArrow", "ALT")
 passthrough("RightArrow", "ALT")
 
--- Flips native_macos_fullscreen_mode (general.lua) live via
--- set_config_overrides, rather than editing that file + reloading, for
--- A/B testing native (real macOS Space) vs WezTerm's own fullscreen
--- against Stage Manager. get_config_overrides starts nil the first time
--- (nothing overridden yet), so the base value read on toggle #1 has to
--- fall back to the general.lua default (false) explicitly — there's
--- nothing else to read it back from at that point.
-wezterm.on("toggle-native-fullscreen", function(window, _pane)
-  local overrides = window:get_config_overrides() or {}
-  local current = overrides.native_macos_fullscreen_mode
-  if current == nil then
-    current = false
-  end
-  overrides.native_macos_fullscreen_mode = not current
-  window:set_config_overrides(overrides)
-  window:toast_notification(
-    "WezTerm",
-    "native_macos_fullscreen_mode -> " .. tostring(overrides.native_macos_fullscreen_mode),
-    nil,
-    2000
-  )
-end)
-table.insert(keys, {
-  key = "f",
-  mods = "CTRL|ALT",
-  action = act.EmitEvent("toggle-native-fullscreen"),
-})
-
 return {
   keys = keys,
 }

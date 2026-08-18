@@ -1,0 +1,12 @@
+-- KDE provides the outer shadow and compositor effects. RESIZE retains a thin
+-- useful frame without restoring a title bar or a second tab/window manager.
+return {
+  default_prog = { "/bin/zsh", "-l" },
+  window_padding = {
+    left = 30,
+    right = 20,
+    top = 28,
+    bottom = 0,
+  },
+  window_decorations = "RESIZE",
+}
