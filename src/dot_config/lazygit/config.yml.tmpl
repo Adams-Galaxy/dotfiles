@@ -1,0 +1,35 @@
+# Lazygit's colour surface is resolved from the selected Wombat theme.
+gui:
+  nerdFontsVersion: "3"
+  theme:
+    activeBorderColor:
+      - "{{theme.syntax.function}}"
+      - bold
+    inactiveBorderColor:
+      - "{{theme.ui.border}}"
+    searchingActiveBorderColor:
+      - "{{theme.syntax.function}}"
+      - bold
+    optionsTextColor:
+      - "{{theme.syntax.function}}"
+    selectedLineBgColor:
+      - "{{theme.ui.surface_raised}}"
+    inactiveViewSelectedLineBgColor:
+      - "{{theme.ui.surface}}"
+    cherryPickedCommitFgColor:
+      - "{{theme.syntax.function}}"
+    cherryPickedCommitBgColor:
+      - "{{theme.ui.surface_raised}}"
+    markedBaseCommitFgColor:
+      - "{{theme.ui.background}}"
+    markedBaseCommitBgColor:
+      - "{{theme.diagnostic.warn}}"
+    unstagedChangesColor:
+      - "{{theme.diagnostic.error}}"
+    defaultFgColor:
+      - "{{theme.ui.foreground}}"
+
+git:
+  paging:
+    colorArg: always
+    pager: delta --dark --paging=never

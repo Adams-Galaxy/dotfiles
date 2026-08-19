@@ -93,6 +93,7 @@ end
 w.use("shell")
 w.use("zsh", { machine = machine })
 w.use("git")
+w.use("lazygit", { machine = machine })
 w.use("nvim")
 w.use("tmux")
 w.use("wezterm")
