@@ -1,12 +1,14 @@
 local w = require("wombat")
 local machine = w.module.config().machine or {}
 local platform = machine.platform
+local theme = w.using("theme")
+local target = require("wezterm.target")
 
 if platform ~= "macos" and platform ~= "fedora" and platform ~= "wsl" and platform ~= "linux" then
     error(("WezTerm has no platform configuration for %q"):format(platform))
 end
 
--- Platform policy is compiled into the normal WezTerm tree. The live config
--- never has to rediscover whether it runs under macOS, KDE, or Windows.
-w.module.from("@wezterm/" .. platform, { to = ".config/wezterm/config" })
-w.install("platform.lua")
+-- Platform policy is compiled beside the shared entrypoint. On WSL this is
+-- Windows-native WezTerm's tree, so both modules use the same external root.
+w.module.from("@wezterm/" .. platform, { to = target.config_dir() .. "/config" })
+w.install("platform.lua", { with = { theme = theme } })

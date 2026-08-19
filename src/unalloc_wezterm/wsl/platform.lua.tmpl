@@ -1,0 +1,54 @@
+-- Windows-native WezTerm launches the distribution through WSL. This file is
+-- rendered from the shared palette so Windows chrome cannot drift from the
+-- terminal colours authored by the selected dotfiles theme.
+local wezterm = require("wezterm")
+
+return {
+  default_prog = { "wsl.exe", "--cd", "~" },
+
+  automatically_reload_config = true,
+  animation_fps = 120,
+  max_fps = 120,
+  default_cursor_style = "SteadyBar",
+  text_background_opacity = 1,
+  window_background_opacity = 0,
+  win32_system_backdrop = "Mica",
+  win32_acrylic_accent_color = "{{theme.ui.background}}",
+
+  window_padding = {
+    left = "1cell",
+    right = "1cell",
+    top = "0cell",
+    bottom = "0.5cell",
+  },
+  inactive_pane_hsb = {
+    saturation = 0.9,
+    brightness = 0.75,
+  },
+
+  hide_mouse_cursor_when_typing = true,
+  window_close_confirmation = "NeverPrompt",
+  window_frame = {
+    font = wezterm.font({ family = "JetBrainsMono Nerd Font", weight = "Bold" }),
+    font_size = 11,
+    active_titlebar_bg = "{{theme.ui.background}}",
+    inactive_titlebar_bg = "{{theme.ui.background}}",
+    active_titlebar_fg = "{{theme.ui.foreground}}",
+    inactive_titlebar_fg = "{{theme.ansi.white}}",
+    active_titlebar_border_bottom = "{{theme.ansi.black}}",
+    inactive_titlebar_border_bottom = "{{theme.ansi.black}}",
+    button_fg = "{{theme.ansi.white}}",
+    button_bg = "{{theme.ui.background}}",
+    button_hover_fg = "{{theme.ui.foreground}}",
+    button_hover_bg = "{{theme.ansi.bright_black}}",
+  },
+
+  mouse_bindings = {
+    {
+      event = { Drag = { streak = 1, button = "Left" } },
+      mods = "CTRL",
+      mouse_reporting = true,
+      action = wezterm.action.StartWindowDrag,
+    },
+  },
+}
