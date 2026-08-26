@@ -6,3 +6,8 @@
 if (( ${+commands[wombat]} )); then
   cache_init wombat wombat completions zsh
 fi
+
+if (( ${+commands[tailscale]} )); then
+  cache_init tailscale tailscale completion zsh
+fi
+

@@ -38,10 +38,9 @@ table.insert(keys, {
   action = wezterm.action.EmitEvent("toggle-native-fullscreen"),
 })
 
-return {
+local config = {
   prefer_egl = true,
   native_macos_fullscreen_mode = false,
-  macos_simple_fullscreen_show_menu_bar = true,
   macos_fullscreen_extend_behind_notch = false,
   default_prog = { "/bin/zsh", "-l" },
   window_padding = {
@@ -59,3 +58,11 @@ return {
   mouse_bindings = mouse_bindings,
   keys = keys,
 }
+
+-- Comparison runs use an official build that does not know personal-only
+-- configuration fields. Normal launches retain the personal fullscreen policy.
+if os.getenv("WEZTERM_UPSTREAM_BUILD") ~= "1" then
+  config.macos_simple_fullscreen_show_menu_bar = true
+end
+
+return config

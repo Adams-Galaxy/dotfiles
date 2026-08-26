@@ -98,6 +98,12 @@ os = ["macos"]
 
 [command.tmux]
 
+[command.tailscale]
+platforms = ["macos", "fedora"]
+
+[command.uv]
+platforms = ["macos", "fedora"]
+
 [command.delta]
 alias = { brew = "git-delta", apt = "git-delta", dnf = "git-delta" }
 
