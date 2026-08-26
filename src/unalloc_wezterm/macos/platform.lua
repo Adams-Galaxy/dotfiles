@@ -53,6 +53,9 @@ return {
   macos_window_background_blur = 40,
   window_background_opacity = 0.66,
   window_decorations = "RESIZE | MACOS_FORCE_ENABLE_SHADOW",
+
+  font_size = 16.0,
+
   mouse_bindings = mouse_bindings,
   keys = keys,
 }
