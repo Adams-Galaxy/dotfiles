@@ -92,6 +92,7 @@ if machine.enabled then
 end
 w.use("shell")
 w.use("zsh", { machine = machine })
+w.use("ssh")
 w.use("git")
 w.use("lazygit", { machine = machine })
 w.use("nvim")
