@@ -25,6 +25,12 @@ clip() {
 
   local target="clipboard"
   local value
+  local quiet=false
+
+  if [[ "$1" == "-q" ]]; then
+    quiet=true
+    shift
+  fi
 
   if [[ "$1" == "--env" ]]; then
     shift
@@ -42,8 +48,8 @@ clip() {
   elif [[ "$1" == "--" ]]; then
     shift
   elif [[ "$1" == "--help" ]]; then
-    print "Usage: clip [TEXT ...]"
-    print "       clip --env VARIABLE [TEXT ...]"
+    print "Usage: clip [-q] [TEXT ...]"
+    print "       clip [-q] --env VARIABLE [TEXT ...]"
     return 0
   fi
 
@@ -58,7 +64,7 @@ clip() {
     elif [[ ! -t 0 ]]; then
       value="$(cat)"
     else
-      print -r -- "${(P)target-}"
+      [[ "$quiet" == true ]] || print -r -- "${(P)target-}"
       return 0
     fi
 
@@ -68,7 +74,7 @@ clip() {
     fi
 
     export "$target=$value"
-    print -r -- "$value"
+    [[ "$quiet" == true ]] || print -r -- "$value"
     return 0
   fi
 
@@ -77,9 +83,9 @@ clip() {
   elif [[ ! -t 0 ]]; then
     _clip_write
   else
-    _clip_read
+    [[ "$quiet" == true ]] || _clip_read
     return
   fi
 
-  _clip_read
+  [[ "$quiet" == true ]] || _clip_read
 }

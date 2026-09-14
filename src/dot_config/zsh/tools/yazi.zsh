@@ -4,7 +4,7 @@ y() {
   local tmp
   local cwd
 
-  if ! command -v yazi >/dev/null 2>&1; then
+  if ! has_command yazi; then
     if [[ $# -gt 0 && -d "$1" ]]; then
       builtin cd -- "$1"
       return 0
@@ -27,7 +27,7 @@ sy() {
   local tmp
   local cwd
 
-  if ! command -v yazi >/dev/null 2>&1; then
+  if ! has_command yazi; then
     if [[ $# -gt 0 && -d "$1" ]]; then
       builtin cd -- "$1"
       return 0

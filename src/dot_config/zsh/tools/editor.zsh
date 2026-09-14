@@ -1,11 +1,11 @@
 # Terminal and GUI editor workflows.
 
 edit() {
-  if command -v "$SHELL_EDITOR" >/dev/null 2>&1; then
+  if has_command "$SHELL_EDITOR"; then
     "$SHELL_EDITOR" "$@"
-  elif command -v nvim >/dev/null 2>&1; then
+  elif has_command nvim; then
     nvim "$@"
-  elif command -v vim >/dev/null 2>&1; then
+  elif has_command vim; then
     vim "$@"
   else
     print -u2 "No terminal editor found"
@@ -14,16 +14,16 @@ edit() {
 }
 
 sudoedit() {
-  if ! command -v sudo >/dev/null 2>&1; then
+  if ! has_command sudo; then
     print -u2 "sudo is not available"
     return 127
   fi
 
-  if command -v "$SHELL_EDITOR" >/dev/null 2>&1; then
+  if has_command "$SHELL_EDITOR"; then
     sudo "$SHELL_EDITOR" "$@"
-  elif command -v nvim >/dev/null 2>&1; then
+  elif has_command nvim; then
     sudo nvim "$@"
-  elif command -v vim >/dev/null 2>&1; then
+  elif has_command vim; then
     sudo vim "$@"
   else
     print -u2 "No terminal editor found"
@@ -32,7 +32,7 @@ sudoedit() {
 }
 
 gui_edit() {
-  if command -v "$GUI_EDITOR" >/dev/null 2>&1; then
+  if has_command "$GUI_EDITOR"; then
     "$GUI_EDITOR" "$@"
   else
     edit "$@"

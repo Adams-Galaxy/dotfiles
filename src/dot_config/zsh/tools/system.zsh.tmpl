@@ -8,7 +8,7 @@ tsize() { print "$(cols) $(rows)" }
 {{#if features.mufetch}}
 # Mufetch is installed and supported only on the macOS configuration.
 song() {
-  if command -v mufetch >/dev/null 2>&1; then
+  if has_command mufetch; then
     mufetch search "$@"
   else
     print -u2 "mufetch is not installed"

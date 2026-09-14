@@ -38,6 +38,11 @@ function M.normalize(hex)
     return encode(red, green, blue)
 end
 
+function M.strip_hash(hex)
+    parse(hex)
+    return hex:sub(2):lower()
+end
+
 function M.alpha(hex, opacity)
     local red, green, blue = parse(hex)
     return ("#%02x%02x%02x%02x"):format(red, green, blue, round(amount(opacity, "opacity") * 255))

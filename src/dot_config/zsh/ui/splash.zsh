@@ -54,7 +54,7 @@ splash_should_skip() {
 }
 
 splash() {
-  if ! command -v fastfetch >/dev/null 2>&1; then
+  if ! has_command fastfetch; then
     print "fastfetch is not installed"
     return 1
   fi
@@ -96,3 +96,8 @@ splash() {
     fastfetch --logo-padding-right "$logo_padding"
   fi
 }
+
+# The splash's own interactive entry points stay with the feature rather than
+# in the general aliases layer.
+alias ff="splash"
+alias cff="clear && splash"

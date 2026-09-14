@@ -80,6 +80,10 @@ elseif machine.name == "bob" then
     if machine.platform == "fedora" then
         w.use("fedora")
         w.use("kde")
+        -- Hyprland is a sibling login session, not a replacement for KDE yet.
+        -- Keep its compositor policy isolated while its shell is developed.
+        w.use("hyprland")
+        w.use("mangohud", { machine = machine })
     elseif machine.platform == "wsl" then
         w.use("wsl")
     end

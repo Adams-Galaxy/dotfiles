@@ -1,7 +1,7 @@
 # Fuzzy project workflow pickers.
 
 fj() {
-    command -v just >/dev/null || {
+    has_command just || {
         print -u2 "just is not installed"
         return 1
     }

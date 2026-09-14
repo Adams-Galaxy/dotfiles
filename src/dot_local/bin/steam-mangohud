@@ -1,0 +1,8 @@
+#!/bin/sh
+set -eu
+
+# Preserve an explicit opt-out while enabling MangoHud for ordinary launches.
+: "${MANGOHUD:=1}"
+export MANGOHUD
+
+exec /usr/bin/steam "$@"

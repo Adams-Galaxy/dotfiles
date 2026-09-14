@@ -1,0 +1,17 @@
+{
+  "env": {
+    "PATH": "$(PATH):$(HOME)/.local/bin"
+  },
+  "apps": [
+    {
+      "name": "Desktop",
+      "image-path": "desktop.png",
+      "prep-cmd": [
+        {
+          "do": "/bin/sh -c \"exec /home/adam/.local/bin/remote-desktop-session configure \\\"$SUNSHINE_CLIENT_WIDTH\\\" \\\"$SUNSHINE_CLIENT_HEIGHT\\\" \\\"$SUNSHINE_CLIENT_FPS\\\"\"",
+          "undo": ""
+        }
+      ]
+    }
+  ]
+}

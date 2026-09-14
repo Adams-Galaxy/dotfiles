@@ -98,6 +98,24 @@ os = ["macos"]
 
 [command.tmux]
 
+[command.Hyprland]
+platforms = ["fedora"]
+alias = { dnf = "hyprland" }
+
+[command.qs]
+platforms = ["fedora"]
+alias = { dnf = "quickshell" }
+
+[command.grim]
+platforms = ["fedora"]
+
+[command.slurp]
+platforms = ["fedora"]
+
+[command.wl-copy]
+platforms = ["fedora"]
+alias = { dnf = "wl-clipboard" }
+
 [command.tailscale]
 platforms = ["macos", "fedora"]
 
@@ -115,6 +133,19 @@ alias = { brew = "tealdeer", apt = "tealdeer", dnf = "tealdeer" }
 
 [command.gum]
 
+[command.steam]
+machines = ["bob"]
+platforms = ["fedora"]
+
+[command.mangohud]
+machines = ["bob"]
+platforms = ["fedora"]
+
+[package."mangohud.i686"]
+machines = ["bob"]
+platforms = ["fedora"]
+provider = "dnf"
+
 [package.ca-certificates]
 platforms = ["wsl"]
 provider = "apt"
@@ -129,3 +160,19 @@ platforms = ["wsl"]
 provider = "apt"
 with = { source = "yazi" }
 publishes = { commands = ["yazi", "ya"] }
+
+[package.hyprpolkitagent]
+platforms = ["fedora"]
+provider = "dnf"
+
+[package.xdg-desktop-portal-hyprland]
+platforms = ["fedora"]
+provider = "dnf"
+
+[package.xdg-desktop-portal-gtk]
+platforms = ["fedora"]
+provider = "dnf"
+
+[package.qt6-qtwayland]
+platforms = ["fedora"]
+provider = "dnf"
