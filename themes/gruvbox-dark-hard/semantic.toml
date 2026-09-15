@@ -2,7 +2,7 @@
 # palette.toml, never in semantic roles or consumer templates.
 
 [ui]
-background = "palette.bg0_hard"
+background = "palette.bg0"
 foreground = "palette.fg1"
 surface = "palette.bg1"
 surface_raised = "palette.bg2"

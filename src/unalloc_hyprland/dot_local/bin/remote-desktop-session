@@ -1,0 +1,164 @@
+#!/bin/sh
+set -eu
+
+runtime_dir="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/remote-desktop"
+ready_file="$runtime_dir/ready"
+module_file="$runtime_dir/pipewire-module"
+default_sink_file="$runtime_dir/previous-default-sink"
+
+log() {
+    printf '%s\n' "remote-desktop-session: $*" >&2
+}
+
+monitor_json() {
+    hyprctl -j monitors
+}
+
+remote_is_only_monitor() {
+    # `hyprctl monitors` lists enabled outputs only; disabled outputs are
+    # intentionally absent from this collection.
+    monitor_json | jq -e 'length == 1 and .[0].name == "REMOTE"' >/dev/null
+}
+
+configure_monitor() {
+    width=${1:-}
+    height=${2:-}
+    fps=${3:-}
+
+    case "$width:$height:$fps" in
+        *[!0-9:]*|'')
+            log "rejecting malformed display request: ${width}x${height}@${fps}"
+            return 2
+            ;;
+    esac
+
+    if [ "$width" -lt 640 ] || [ "$width" -gt 7680 ] || \
+       [ "$height" -lt 480 ] || [ "$height" -gt 4320 ] || \
+       [ "$fps" -lt 1 ] || [ "$fps" -gt 120 ]; then
+        log "rejecting out-of-range display request: ${width}x${height}@${fps}"
+        return 2
+    fi
+
+    if [ "$height" -le 1200 ]; then
+        scale=1
+    elif [ "$height" -le 1600 ]; then
+        scale=1.25
+    else
+        scale=1.5
+    fi
+
+    # This repository uses Hyprland's Lua configuration parser. Dynamic
+    # keyword mutation is deliberately unavailable there, so apply the same
+    # typed monitor declaration through hyprctl's Lua evaluator.
+    hyprctl eval \
+        "hl.monitor({ output = \"REMOTE\", mode = \"${width}x${height}@${fps}\", position = \"0x0\", scale = ${scale} })" \
+        >/dev/null
+    monitor_json | jq -e --argjson width "$width" --argjson height "$height" --argjson scale "$scale" \
+        'length == 1 and .[0].name == "REMOTE" and .[0].width == $width and .[0].height == $height and .[0].scale == $scale' \
+        >/dev/null
+    log "configured REMOTE as ${width}x${height}@${fps}, scale ${scale}"
+}
+
+start_audio() {
+    previous_sink=$(wpctl inspect @DEFAULT_AUDIO_SINK@ 2>/dev/null | sed -n 's/^.*node.name = "\([^"]*\)"/\1/p' | head -n 1)
+    if [ -n "$previous_sink" ]; then
+        printf '%s\n' "$previous_sink" > "$default_sink_file"
+    fi
+
+    module_id=$(pactl load-module module-null-sink \
+        sink_name=remote-desktop \
+        sink_properties=device.description=Remote_Desktop \
+        format=s16le rate=48000 channels=2)
+    printf '%s\n' "$module_id" > "$module_file"
+    pactl set-default-sink remote-desktop
+    pactl list short sinks | awk '$2 == "remote-desktop" { found = 1 } END { exit !found }'
+}
+
+stop_audio() {
+    if [ -s "$default_sink_file" ]; then
+        previous_sink=$(cat "$default_sink_file")
+        pactl set-default-sink "$previous_sink" 2>/dev/null || true
+    fi
+    if [ -s "$module_file" ]; then
+        module_id=$(cat "$module_file")
+        pactl unload-module "$module_id" 2>/dev/null || true
+    fi
+    rm -f "$module_file" "$default_sink_file"
+}
+
+cleanup() {
+    rm -f "$ready_file"
+    systemctl --user stop remote-desktop-sunshine.service 2>/dev/null || true
+    systemctl --user reset-failed remote-desktop-sunshine.service 2>/dev/null || true
+    stop_audio
+    if hyprctl version >/dev/null 2>&1; then
+        hyprctl output remove REMOTE >/dev/null 2>&1 || true
+    fi
+}
+
+start_session() {
+    if [ "${REMOTE_DESKTOP:-0}" != 1 ]; then
+        log "refusing to start outside REMOTE_DESKTOP=1"
+        return 2
+    fi
+
+    mkdir -p "$runtime_dir"
+    chmod 700 "$runtime_dir"
+    rm -f "$ready_file"
+    trap 'cleanup' EXIT HUP INT TERM
+
+    if ! monitor_json | jq -e '.[] | select(.name == "REMOTE")' >/dev/null; then
+        hyprctl output create headless REMOTE >/dev/null
+    fi
+    configure_monitor 1920 1080 60
+    if ! remote_is_only_monitor; then
+        log "REMOTE is not the only active monitor; refusing to expose Sunshine"
+        monitor_json >&2
+        return 1
+    fi
+
+    start_audio
+    systemctl --user import-environment REMOTE_DESKTOP WAYLAND_DISPLAY HYPRLAND_INSTANCE_SIGNATURE XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP
+    systemctl --user daemon-reload
+    # A static unit is not loaded until its first start, so reset-failed may
+    # legitimately report "not loaded" on a clean machine.
+    systemctl --user reset-failed remote-desktop-sunshine.service 2>/dev/null || true
+    systemctl --user start remote-desktop-sunshine.service
+
+    attempts=0
+    while [ "$attempts" -lt 40 ]; do
+        if systemctl --user is-active --quiet remote-desktop-sunshine.service && \
+           pactl list short sinks | awk '$2 == "remote-desktop" { found = 1 } END { exit !found }' && \
+           remote_is_only_monitor && \
+           ss -H -ltn | awk '$4 ~ /:47989$/ { stream = 1 } $4 ~ /:47990$/ { web = 1 } END { exit !(stream && web) }'; then
+            : > "$ready_file"
+            chmod 600 "$ready_file"
+            trap - EXIT HUP INT TERM
+            log "session ready"
+            return 0
+        fi
+        attempts=$((attempts + 1))
+        sleep 0.5
+    done
+
+    log "Sunshine did not become ready"
+    systemctl --user status remote-desktop-sunshine.service --no-pager >&2 || true
+    return 1
+}
+
+case "${1:-}" in
+    start)
+        start_session
+        ;;
+    configure)
+        shift
+        configure_monitor "$@"
+        ;;
+    cleanup)
+        cleanup
+        ;;
+    *)
+        log "usage: remote-desktop-session {start|configure WIDTH HEIGHT FPS|cleanup}"
+        exit 2
+        ;;
+esac

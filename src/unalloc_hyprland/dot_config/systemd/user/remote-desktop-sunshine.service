@@ -1,0 +1,11 @@
+[Unit]
+Description=Sunshine for the SSH-triggered Hyprland session
+ConditionEnvironment=REMOTE_DESKTOP=1
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/sunshine
+Restart=on-failure
+RestartSec=2
+
+# This unit is deliberately static: only remote-desktop-session starts it.

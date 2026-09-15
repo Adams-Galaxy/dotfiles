@@ -20,6 +20,20 @@ return {
         "ansi.black",
         "ansi.bright_white",
     },
+    hyprland = {
+        "ui.background",
+        "ui.foreground",
+        "ui.surface",
+        "ui.surface_raised",
+        "ui.border",
+        "ui.accent",
+        "ui.muted",
+        "diagnostic.error",
+        "diagnostic.ok",
+        "palette.orange_bright",
+        "palette.purple_bright",
+        "palette.yellow_bright",
+    },
     yazi = {
         "ui.background",
         "ui.foreground",
@@ -45,6 +59,16 @@ return {
     fastfetch = {
         "ansi.bright_black",
         "palette.orange_bright",
+    },
+    mangohud = {
+        "ui.background",
+        "ui.foreground",
+        "palette.aqua_bright",
+        "palette.blue_bright",
+        "palette.green_bright",
+        "palette.orange_bright",
+        "palette.purple_bright",
+        "palette.yellow_bright",
     },
     tmux = {
         "ui.background",

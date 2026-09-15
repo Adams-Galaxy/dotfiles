@@ -1,0 +1,150 @@
+-- Bare Wombat-owned Hyprland session. Shell facilities are intentionally
+-- absent until they are added as independent modules.
+
+local terminal = "wezterm"
+local remote_desktop = os.getenv("REMOTE_DESKTOP") == "1"
+
+-- Bob's AOC panel advertises 170 Hz, but `preferred` selects its 60 Hz EDID
+-- mode. Match by stable description so DisplayPort connector renumbering does
+-- not silently put the session back at 60 Hz.
+if remote_desktop then
+    -- Client-native modes such as 3200x1800 do not always divide into an
+    -- integer logical size at the requested fractional scale. Preserve the
+    -- explicit remote scale instead of allowing Hyprland to substitute one.
+    hl.config({ debug = { disable_scale_checks = true } })
+    hl.monitor({ output = "desc:AOC Q27G2G3R4B 137P8HA010248", disabled = true })
+    hl.monitor({ output = "REMOTE", mode = "1920x1080@60", position = "0x0", scale = 1 })
+else
+    hl.monitor({
+        output = "desc:AOC Q27G2G3R4B 137P8HA010248",
+        mode = "2560x1440@170",
+        position = "0x0",
+        scale = 1,
+        vrr = 0,
+    })
+    hl.monitor({ output = "", mode = "preferred", position = "auto", scale = 1 })
+end
+
+hl.env("XCURSOR_SIZE", "24")
+hl.env("HYPRCURSOR_SIZE", "24")
+hl.env("ELECTRON_OZONE_PLATFORM_HINT", "auto")
+hl.env("__GLX_VENDOR_LIBRARY_NAME", "nvidia")
+
+hl.config({
+    general = {
+        gaps_in = 6,
+        gaps_out = 14,
+        border_size = 2,
+        resize_on_border = true,
+        allow_tearing = false,
+        layout = "dwindle",
+        col = {
+            active_border = {
+                colors = { "rgba(83a598ee)", "rgba(8ec07cee)", "rgba(fe8019dd)" },
+                angle = 45,
+            },
+            inactive_border = "rgba(50494599)",
+        },
+    },
+    decoration = {
+        rounding = 13,
+        rounding_power = 2.4,
+        active_opacity = 1.0,
+        inactive_opacity = 0.94,
+        fullscreen_opacity = 1.0,
+        shadow = {
+            enabled = true,
+            range = 18,
+            render_power = 3,
+            color = "rgba(1d2021aa)",
+            color_inactive = "rgba(1d202166)",
+        },
+        blur = {
+            enabled = true,
+            size = 8,
+            passes = 3,
+            vibrancy = 0.22,
+            vibrancy_darkness = 0.08,
+            noise = 0.008,
+            contrast = 1.05,
+            brightness = 0.92,
+            popups = true,
+            popups_ignorealpha = 0.18,
+        },
+    },
+    input = {
+        kb_layout = "us",
+        follow_mouse = 1,
+        sensitivity = 0,
+        accel_profile = "flat",
+    },
+    dwindle = {
+        preserve_split = true,
+        smart_split = true,
+    },
+    misc = {
+        disable_hyprland_logo = true,
+        force_default_wallpaper = 0,
+        focus_on_activate = true,
+        mouse_move_enables_dpms = true,
+        key_press_enables_dpms = true,
+    },
+    xwayland = { force_zero_scaling = true },
+})
+
+hl.curve("wombatOut", { type = "bezier", points = { { 0.16, 1 }, { 0.3, 1 } } })
+hl.curve("wombatInOut", { type = "bezier", points = { { 0.65, 0 }, { 0.35, 1 } } })
+hl.curve("wombatSpring", { type = "spring", mass = 1, stiffness = 285, dampening = 28 })
+hl.animation({ leaf = "global", enabled = true, speed = 8, bezier = "default" })
+hl.animation({ leaf = "windows", enabled = true, speed = 4.5, spring = "wombatSpring" })
+hl.animation({ leaf = "windowsIn", enabled = true, speed = 4.5, spring = "wombatSpring", style = "popin 88%" })
+hl.animation({ leaf = "windowsOut", enabled = true, speed = 3.5, bezier = "wombatOut", style = "popin 92%" })
+hl.animation({ leaf = "fade", enabled = true, speed = 4, bezier = "wombatOut" })
+hl.animation({ leaf = "layers", enabled = true, speed = 4, bezier = "wombatOut", style = "fade" })
+hl.animation({ leaf = "workspaces", enabled = true, speed = 4, bezier = "wombatInOut", style = "slide" })
+
+hl.on("hyprland.start", function()
+    hl.exec_cmd("dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP")
+    hl.exec_cmd("systemctl --user start hyprpolkitagent.service")
+    hl.exec_cmd("qs -c wombat")
+    if remote_desktop then
+        hl.exec_cmd("/home/adam/.local/bin/remote-desktop-session start")
+    end
+end)
+
+local mod = "SUPER"
+hl.bind(mod .. " + Q", hl.dsp.exec_cmd(terminal), { description = "Open terminal" })
+hl.bind(mod .. " + E", hl.dsp.exec_cmd(terminal .. " start -- yazi"), { description = "Open files" })
+hl.bind(mod .. " + C", hl.dsp.window.close(), { description = "Close window" })
+hl.bind(mod .. " + V", hl.dsp.window.float({ action = "toggle" }), { description = "Toggle floating" })
+hl.bind(mod .. " + P", hl.dsp.window.pseudo(), { description = "Toggle pseudotile" })
+hl.bind(mod .. " + T", hl.dsp.layout("togglesplit"), { description = "Toggle split direction" })
+hl.bind(mod .. " + F", hl.dsp.window.fullscreen({ mode = "fullscreen", action = "toggle" }), { description = "Toggle fullscreen" })
+
+hl.bind(mod .. " + left", hl.dsp.focus({ direction = "left" }))
+hl.bind(mod .. " + down", hl.dsp.focus({ direction = "down" }))
+hl.bind(mod .. " + up", hl.dsp.focus({ direction = "up" }))
+hl.bind(mod .. " + right", hl.dsp.focus({ direction = "right" }))
+hl.bind(mod .. " + SHIFT + left", hl.dsp.window.move({ direction = "left" }))
+hl.bind(mod .. " + SHIFT + down", hl.dsp.window.move({ direction = "down" }))
+hl.bind(mod .. " + SHIFT + up", hl.dsp.window.move({ direction = "up" }))
+hl.bind(mod .. " + SHIFT + right", hl.dsp.window.move({ direction = "right" }))
+hl.bind(mod .. " + mouse:272", hl.dsp.window.drag(), { mouse = true })
+hl.bind(mod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
+
+for workspace = 1, 10 do
+    local key = workspace % 10
+    hl.bind(mod .. " + " .. key, hl.dsp.focus({ workspace = workspace }))
+    hl.bind(mod .. " + SHIFT + " .. key, hl.dsp.window.move({ workspace = workspace }))
+end
+
+hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1.25 @DEFAULT_AUDIO_SINK@ 5%+"), { locked = true, repeating = true })
+hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"), { locked = true, repeating = true })
+hl.bind("XF86AudioMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"), { locked = true })
+hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"), { locked = true })
+
+hl.window_rule({
+    name = "suppress-maximize",
+    match = { class = ".*" },
+    suppress_event = "maximize",
+})

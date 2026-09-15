@@ -8,7 +8,7 @@ export DOTFILES="$HOME/.config/zsh"
 
 source "$DOTFILES/core/environment.zsh"
 source "$DOTFILES/core/path.zsh"
-source "$DOTFILES/core/aliases.zsh"
+source "$DOTFILES/core/utilities.zsh"
 
 case "$(uname -s)" in
   Darwin) source "$DOTFILES/platform/macos.zsh" ;;
@@ -17,6 +17,7 @@ esac
 
 source "$DOTFILES/tools/editor.zsh"
 source "$DOTFILES/tools/python.zsh"
+source "$DOTFILES/tools/figlet.zsh"
 source "$DOTFILES/tools/yazi.zsh"
 source "$DOTFILES/tools/system.zsh"
 source "$DOTFILES/tools/clipboard.zsh"
@@ -45,6 +46,10 @@ source "$DOTFILES/init/completions.zsh"
 
 source "$DOTFILES/ui/diagnostics.zsh"
 source "$DOTFILES/ui/splash.zsh"
+
+# Aliases are a separate shell UI layer. Add a direct *.zsh file to aliases/
+# and it will be loaded here in lexical order; no startup manifest edit needed.
+source_zsh_directory "$DOTFILES/aliases"
 
 # Local state stays outside Wombat so machine-specific settings never enter
 # the deployed source tree. It loads last and may deliberately override defaults.

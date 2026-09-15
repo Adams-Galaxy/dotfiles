@@ -1,0 +1,42 @@
+# Wombat-managed MangoHud policy for Bob's Steam games.
+# The overlay is injected by steam-mangohud but remains hidden until toggled.
+no_display
+toggle_hud=Shift_R+F12
+position=top-left
+{{#if fps_limit}}
+
+# Outer Wilds updates its physics simulation at 120 Hz in secretsettings.txt.
+# Match rendering to that cadence; early limiting favours even frame delivery.
+fps_limit={{fps_limit}}
+fps_limit_method=early
+show_fps_limit
+{{/if}}
+
+# A readable, moderately detailed default rather than MangoHud's exhaustive
+# full preset. Colours follow the selected Wombat theme.
+font_size=22
+background_alpha=0.78
+round_corners=8
+text_color={{color_strip_hash theme.ui.foreground}}
+background_color={{color_strip_hash theme.ui.background}}
+gpu_color={{color_strip_hash theme.palette.aqua_bright}}
+cpu_color={{color_strip_hash theme.palette.blue_bright}}
+vram_color={{color_strip_hash theme.palette.purple_bright}}
+ram_color={{color_strip_hash theme.palette.yellow_bright}}
+frametime_color={{color_strip_hash theme.palette.green_bright}}
+wine_color={{color_strip_hash theme.palette.orange_bright}}
+
+fps
+frame_timing
+gpu_stats
+gpu_temp
+gpu_power
+vram
+cpu_stats
+cpu_temp
+ram
+wine
+engine_version
+gamemode
+present_mode
+vulkan_driver
