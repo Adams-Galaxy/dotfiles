@@ -36,6 +36,10 @@ if ! command -v bat >/dev/null 2>&1 && command -v batcat >/dev/null 2>&1; then
   alias bat="batcat"
 fi
 
+if command -v moonlight >/dev/null 2>&1; then
+  alias ml="moonlight"
+fi
+
 # Git aliases
 alias gs="git status"
 alias ga="git add"
