@@ -16,3 +16,12 @@ song() {
   fi
 }
 {{/if}}
+
+# Adjacent to cd, used to tunnel down into a new directory.
+vf() {
+  if [[ -d "$1" ]]; then
+    cd "$1" || return 0
+  else
+    mkdir -p "$1" && cd "$1" || return 0
+  fi
+}
