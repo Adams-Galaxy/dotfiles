@@ -55,6 +55,8 @@ local keys = require("config.keys")
 for _, binding in ipairs(platform.keys or {}) do
   table.insert(keys.keys, binding)
 end
-overlay(config, keys)
+-- Keybindings are an ordered list, not an overlayable map: recursive merging
+-- would combine actions at matching indices and make WezTerm reject the config.
+config.keys = keys.keys
 
 return config
